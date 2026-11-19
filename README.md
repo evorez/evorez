@@ -40,6 +40,34 @@ Three tracks live inside the file as base64 data URIs, decoded with the Web Audi
 
 Files: `src/nostalgia.mp3`, `src/og.mp3`, `src/legacy.mp3`.
 
+
+## Copyright and copy protection
+
+The site is proprietary: see `LICENSE`. It is public to read, not to reuse.
+
+What ships with every build:
+
+- a copyright comment and build fingerprint at the top of `index.html`
+- `<link rel="canonical">`, author / copyright meta and Open Graph tags, so a
+  copied page still points search engines at `evorez.vercel.app`
+- a **copy guard**: on any host that is not `evorez.vercel.app` (or localhost /
+  a preview sandbox), the page shows an `unofficial copy` badge and logs a
+  console warning. It does not break the page - it just marks it, which is the
+  evidence a DMCA notice needs
+- `vercel.json` headers: `X-Frame-Options: SAMEORIGIN` (nobody can embed the
+  site in theirs), `nosniff`, a referrer policy and a permissions policy
+
+If someone lifts it anyway:
+
+1. screenshot their URL with the badge visible, plus `view-source` showing the
+   copyright comment and fingerprint
+2. file a DMCA / copyright report with their host (Vercel, Netlify, GitHub
+   Pages, Cloudflare) and with GitHub if the source is public
+3. email `evorez.alive@gmail.com` a copy of the notice so the record exists
+
+Nothing client-side can stop a determined rebuild - but a rebuild is a *new*
+site, not a copy, and that is not something a licence or a script can prevent.
+
 ## The chat (replaces the old terminal)
 
 The dock's third button opens **Evorez's chat** — a real LLM with no key in the page.

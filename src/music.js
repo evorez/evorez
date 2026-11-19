@@ -175,18 +175,6 @@
     }
   }
 
-  /* on by default: browsers refuse audio until the user touches something, so the
-     very first tap / key press anywhere starts the default track (still user-initiated) */
-  if(get(MKEY, null) === null){
-    var armed = function(){
-      document.removeEventListener('pointerdown', armed, true);
-      document.removeEventListener('keydown', armed, true);
-      if(!on) start();
-    };
-    document.addEventListener('pointerdown', armed, true);
-    document.addEventListener('keydown', armed, true);
-  }
-
   if(pop){
     pop.addEventListener('click', function(e){
       var it = e.target.closest ? e.target.closest('.titem') : null;
@@ -263,23 +251,11 @@
     }
   });
 
-  /* ---- default: Legacy, on ---- */
+  /* ---- default: Nostalgia, silent ---- */
   paintMenu();
   paint();
-
-  if(get(MKEY, '1') !== '0'){
-    start();                                      /* best effort; browsers may hold it until a gesture */
-  }
-
-  var unlock = function(e){
-    if(e && e.target && e.target.closest && e.target.closest('#musicBtn')) return;   /* let the pill handle its own tap */
-    if(ctx && ctx.state !== 'running'){ try{ ctx.resume(); }catch(err){} }
-    if(!on){ document.removeEventListener('pointerdown', unlock, true);
-             document.removeEventListener('keydown', unlock, true);
-             start(); }
-  };
-  document.addEventListener('pointerdown', unlock, true);
-  document.addEventListener('keydown', unlock, true);
+  /* music never starts on its own: no autoplay, no first-gesture start, no resume from
+     storage. The pill is the only way in. */
 
   window.__music = {
     toggle: function(){ if(on) stop(); else start(); },

@@ -113,8 +113,7 @@ html[data-theme="light"] .rome{color:#0b1a12;text-shadow:0 0 26px rgba(var(--gre
 ROMAN_OLD = ('<p class="sub">Nothing has shipped yet \u2014 no fake dashboards, no borrowed screenshots. '
              "I'm building in the open, and the moment something real exists, it lands <b>right here</b>.</p>")
 ROMAN_NEW = ('<p class="rome">All Eyes On You'
-             '<span class="rome__dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span> '
-             '<span class="rome__e" aria-hidden="true">\U0001F440</span></p>')
+             '<span class="rome__dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></p>')
 
 DOCK_CSS = r'''
 /* ---------- floating iOS dock: every nav icon lives in one pill ---------- */
@@ -927,6 +926,79 @@ html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180d
     s = s[:rs] + RAIN + s[re_end:]
     log.append('%-28s %s' % ('rain: rewritten', 'theme aware'))
     log.append('%-28s %s' % ('pill:', 'github/telegram out, theme icon in'))
+
+    # 5h. the eyes emoji leaves the hero line
+    log.append('%-28s %s' % ('hero:', 'eyes emoji dropped'))
+
+    # 5i. the wordmark reads EVOREZ, upright mono (like the maths-monospace glyphs)
+    if 'Evorez' not in s:
+        raise SystemExit('wordmark not found')
+    s = s.replace('<span class="profile__name">Evorez',
+                  '<span class="profile__name">EVOREZ', 1)
+
+    WORD_CSS = """
+/* ---------- wordmark: EVOREZ in upright mono ---------- */
+.profile__name{font-style:normal;font-weight:600;letter-spacing:.055em;font-size:clamp(23px,4.6vw,33px)}
+@media (max-width:560px){.profile__name{letter-spacing:.045em;font-size:clamp(21px,6.4vw,27px)}}
+"""
+    pj2 = s.rfind('</style>')
+    s = s[:pj2] + WORD_CSS + s[pj2:]
+
+    # 5j. copyright, canonical, and a copy guard for unofficial hosts
+    TAG = '%Y-%m-%d'
+    import hashlib as _hl
+    import datetime as _dt
+    _fp = _hl.sha256((_dt.datetime.utcnow().strftime(TAG) + str(len(s))).encode()).hexdigest()[:12]
+    META = (
+        '<!--\n'
+        '  Evorez \u2014 https://evorez.vercel.app\n'
+        '  Copyright (c) 2026 Evorez. All rights reserved. This file, its design, its copy,\n'
+        '  the avatar, the fonts and the audio are the author\'s work. Copying, republishing\n'
+        '  or rehosting it whole, or rebuilding it as your own, is not permitted.\n'
+        '  Build ' + _dt.datetime.utcnow().strftime(TAG) + ' \u00b7 ' + _fp + '\n'
+        '-->\n'
+        '<meta name="author" content="Evorez">\n'
+        '<meta name="copyright" content="\u00a9 2026 Evorez \u2014 all rights reserved">\n'
+        '<meta name="robots" content="index,follow">\n'
+        '<link rel="canonical" href="https://evorez.vercel.app/">\n'
+        '<meta property="og:type" content="website">\n'
+        '<meta property="og:title" content="Evorez \u2014 this page exists because I\'m alive">\n'
+        '<meta property="og:url" content="https://evorez.vercel.app/">\n'
+        '<meta property="og:site_name" content="Evorez">\n')
+    if '<link rel="canonical"' in s:
+        raise SystemExit('canonical already present')
+    s = s.replace('</head>', META + '</head>', 1)
+
+    GUARD = """<script>
+/* copy guard: the page is meant to live at evorez.vercel.app only. An unlisted host
+   still renders (so previews and the saved file keep working) but gets a badge and a
+   console warning, which is enough to prove a lifted copy in a takedown request. */
+(function(){
+  var OK = ['evorez.vercel.app', 'localhost', '127.0.0.1', '[::1]'];
+  var h = location.hostname || '';
+  if (location.protocol === 'file:' || !h || OK.indexOf(h) > -1) return;
+  if (/(^|\\.)(e2b\\.app|arena\\.ai|vercel\\.app)$/.test(h)) return;
+  function badge(){
+    if (document.getElementById('copynote')) return;
+    var a = document.createElement('a');
+    a.id = 'copynote';
+    a.href = 'https://evorez.vercel.app/';
+    a.textContent = 'unofficial copy \\u00b7 evorez.vercel.app';
+    a.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:99999;' +
+      'font:600 10.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.09em;' +
+      'text-transform:uppercase;text-decoration:none;color:#ffe9e9;' +
+      'background:rgba(26,8,10,.86);border:1px solid rgba(255,96,96,.55);' +
+      'padding:7px 12px;border-radius:999px;backdrop-filter:blur(8px)';
+    document.body.appendChild(a);
+  }
+  if (document.body) badge(); else document.addEventListener('DOMContentLoaded', badge);
+  try{ console.warn('%cThis page is an unauthorised copy of Evorez \\u2014 https://evorez.vercel.app',
+    'color:#ff7b7b;font-weight:700'); }catch(e){}
+})();
+</script>
+"""
+    s = s.replace('</body>', GUARD + '</body>', 1)
+    log.append('%-28s %s' % ('copy guard:', 'canonical + badge on foreign hosts'))
 
     # 5f. the terminal becomes the chat: drop py-lite + the terminal script, swap the panel
     py_a = s.find('/* ---------- py-lite')
