@@ -2,16 +2,18 @@
 
 **Live:** https://evorez.vercel.app
 
-![Evorez — the terminal card](docs/hero.jpg)
+![Evorez — the hero card, dark](docs/hero.jpg)
 
 | | |
 | --- | --- |
-| ![Soundtrack card](docs/soundtrack-menu.jpg) | ![Appearance card](docs/theme-card-dark.jpg) |
-| long-press the pill → the soundtrack card grows out of it | the appearance card, dark mode |
-| ![Appearance card, light](docs/theme-card-light.jpg) | ![Mobile](docs/mobile-soundtrack.jpg) |
-| dark → light runs a circle reveal out of the pill | 390 px: same pill, same cards |
+| ![Header](docs/header.jpg) | ![Pill](docs/pill.jpg) |
+| avatar, `EVOREZ` wordmark, frosted GitHub / Telegram | appearance · music · chat · arcade · gmail |
+| ![Soundtrack card](docs/tracks.jpg) | ![Light theme](docs/light.jpg) |
+| long-press the pill → Nostalgia (default), OG, Legacy | light mode: sun icon, light matrix |
+| ![Chat](docs/chat.jpg) | ![Mobile](docs/mobile.jpg) |
+| the chat answers from a curated FAQ, free model fallback | 390 px: same header, same pill |
 
-Screenshots are regenerated from the live site with Playwright and squeezed to ~20 KB each in `docs/`.
+Screenshots are regenerated from the live site with Playwright (`docs/`).
 
 > **Current build (2026-11-19):** the arcade is empty on purpose. All four games and the city were
 > removed; the ARCADE toggle now shows a loading screen that ends in "no games yet". Everything below
