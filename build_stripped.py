@@ -345,7 +345,15 @@ html.theme-swap *{transition:none!important}
 TRACK_MARKUP = """<div class="scrim" id="scrim" hidden></div>
   <div class="pop island tpop" id="trackPop" role="dialog" aria-label="Soundtrack" hidden>
     <p class="tpop__h">soundtrack</p>
-    <button class="titem is-on" type="button" data-track="legacy" aria-pressed="true">
+    <button class="titem is-on" type="button" data-track="nostalgia" aria-pressed="true">
+      <span class="tpop__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="titem__w"><span class="titem__n">Nostalgia</span><span class="titem__m">2:00 &middot; default</span></span>
+    </button>
+    <button class="titem" type="button" data-track="og" aria-pressed="false">
+      <span class="tpop__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="titem__w"><span class="titem__n">OG</span><span class="titem__m">1:22 &middot; your track</span></span>
+    </button>
+    <button class="titem" type="button" data-track="legacy" aria-pressed="false">
       <span class="tpop__eq" aria-hidden="true"><i></i><i></i><i></i></span>
       <span class="titem__w"><span class="titem__n">Legacy</span><span class="titem__m">2:31 &middot; your track</span></span>
     </button>
@@ -361,10 +369,13 @@ with open('src/chat.css', encoding='utf-8') as fh:
 
 with open('src/music.js', encoding='utf-8') as fh:
     MUSIC_JS = fh.read()
-for _k, _f in (('__LEGACY_B64__', 'src/legacy.mp3'),):
+for _k, _f in (('__LEGACY_B64__', 'src/legacy.mp3'),
+               ('__NOSTALGIA_B64__', 'src/nostalgia.mp3'),
+               ('__OG_B64__', 'src/og.mp3')):
     MUSIC_JS = MUSIC_JS.replace(_k, base64.b64encode(open(_f, 'rb').read()).decode('ascii'))
-if '__LEGACY_B64__' in MUSIC_JS or '__URBAN_B64__' in MUSIC_JS:
-    raise SystemExit('audio placeholders not substituted')
+for _k in ('__LEGACY_B64__', '__NOSTALGIA_B64__', '__OG_B64__', '__URBAN_B64__'):
+    if _k in MUSIC_JS:
+        raise SystemExit('audio placeholder not substituted: ' + _k)
 
 
 def main():
@@ -694,7 +705,6 @@ def main():
                '      <span class="avatar avatar--lg">' + avatar_img + '</span>\n'
                '      <div class="profile__id">\n'
                '        <span class="profile__name">Evorez' + WING + '</span>\n'
-               '        <span class="profile__sub">sheikhfaheem812@gmail.com</span>\n'
                '      </div>\n'
                '    </div>\n'
                '    <div class="profile__acts">\n'
@@ -741,6 +751,18 @@ html[data-theme="light"] .avatar--lg{box-shadow:0 0 0 1px rgba(var(--green-rgb),
 """
     pj = s.find('</style>')
     s = s[:pj] + PROFILE_CSS + s[pj:]
+
+    # 5e6. mail button in the pill (gmail icon, evorez.alive@gmail.com)
+    mail_anchor = re.search(r'<a class="lnk" href="https://github\.com/Evorez".*?</a>', s, re.S)
+    if not mail_anchor:
+        raise SystemExit('github pill link not found')
+    MAIL_ICON = ('<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.6" y="4.6" width="18.8" '
+                 'height="14.8" rx="3.2" stroke="currentColor" stroke-width="1.7"/>'
+                 '<path d="m4 7 7.1 5.2a1.6 1.6 0 0 0 1.9 0L20 7" stroke="currentColor" stroke-width="1.7" '
+                 'stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    MAIL_LINK = ('\n      <a class="lnk" href="mailto:evorez.alive@gmail.com" aria-label="Email evorez.alive@gmail.com">'
+                 + MAIL_ICON + '<span>Gmail</span></a>')
+    s = s[:mail_anchor.end()] + MAIL_LINK + s[mail_anchor.end():]
 
     # 5f. the terminal becomes the chat: drop py-lite + the terminal script, swap the panel
     py_a = s.find('/* ---------- py-lite')

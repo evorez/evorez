@@ -22,6 +22,18 @@ A single-file, production-ready landing page. No build step, no dependencies, no
 (Inter + JetBrains Mono), the brand logo, and the author portrait — so it renders identically
 offline and inside sandboxed previews.
 
+## Soundtrack
+
+Three tracks live inside the file as base64 data URIs, decoded with the Web Audio API:
+
+| track | length | note |
+|---|---|---|
+| **Nostalgia** | 2:00 | **default** — the first tap anywhere starts it (browsers block audio before a gesture) |
+| OG | 1:22 | tap the pill at any time to start / stop |
+| Legacy | 2:31 | long-press the pill to switch |
+
+Files: `src/nostalgia.mp3`, `src/og.mp3`, `src/legacy.mp3`.
+
 ## The chat (replaces the old terminal)
 
 The dock's third button opens **Evorez's chat** — a real LLM with no key in the page.

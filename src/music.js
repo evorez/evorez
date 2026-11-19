@@ -7,15 +7,18 @@
 
   /* your own files, embedded as data: URIs so the page stays a single file */
   var DATA = {
-    legacy: { name: 'Legacy', len: '2:31', b64: '__LEGACY_B64__' }
+    nostalgia: { name: 'Nostalgia', len: '2:00', b64: '__NOSTALGIA_B64__' },
+    og:        { name: 'OG',        len: '1:22', b64: '__OG_B64__' },
+    legacy:    { name: 'Legacy',    len: '2:31', b64: '__LEGACY_B64__' }
   };
-  var ORDER = ['legacy'];
+  var ORDER = ['nostalgia', 'og', 'legacy'];
   var MKEY = 'evorez_music', TKEY = 'evorez_track';
+  var DEFAULT_TRACK = 'nostalgia';
 
   var ctx = null, master = null, src = null, buf = {}, on = false, tok = 0;
   function get(k, d){ try{ var v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; } }
   function set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
-  var cur = DATA[get(TKEY, 'legacy')] ? get(TKEY, 'legacy') : 'legacy';
+  var cur = DATA[get(TKEY, DEFAULT_TRACK)] ? get(TKEY, DEFAULT_TRACK) : DEFAULT_TRACK;
 
   /* ---- audio graph ---- */
   function ensure(){
@@ -170,6 +173,18 @@
       items[i].classList.toggle('is-on', on2);
       items[i].setAttribute('aria-pressed', String(on2));
     }
+  }
+
+  /* on by default: browsers refuse audio until the user touches something, so the
+     very first tap / key press anywhere starts the default track (still user-initiated) */
+  if(get(MKEY, null) === null){
+    var armed = function(){
+      document.removeEventListener('pointerdown', armed, true);
+      document.removeEventListener('keydown', armed, true);
+      if(!on) start();
+    };
+    document.addEventListener('pointerdown', armed, true);
+    document.addEventListener('keydown', armed, true);
   }
 
   if(pop){
