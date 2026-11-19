@@ -22,6 +22,12 @@ A single-file, production-ready landing page. No build step, no dependencies, no
 (Inter + JetBrains Mono), the brand logo, and the author portrait — so it renders identically
 offline and inside sandboxed previews.
 
+## Layers
+
+- **Header** — avatar, `Evorez` wordmark and two frosted **GitHub / Telegram** buttons (`backdrop-filter` over the rain).
+- **Pill** — appearance (moon in dark, sun in light), music, chat, arcade, gmail. GitHub and Telegram live in the header only.
+- **Rain** — 0/1 only, drawn on a canvas at the bottom of the stack (`z-index:-1`) at the panel's own refresh rate; it fades to the page colour of the current theme, so light mode stays light.
+
 ## Soundtrack
 
 Three tracks live inside the file as base64 data URIs, decoded with the Web Audio API:

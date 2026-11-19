@@ -764,6 +764,168 @@ html[data-theme="light"] .avatar--lg{box-shadow:0 0 0 1px rgba(var(--green-rgb),
                  + MAIL_ICON + '<span>Gmail</span></a>')
     s = s[:mail_anchor.end()] + MAIL_LINK + s[mail_anchor.end():]
 
+    # 5g. pill: drop the duplicate GitHub / Telegram buttons, real theme icon,
+    #     frosted header buttons, readable theme-aware matrix rain
+    dock_i = s.find('<div class="dock" id="dock">')
+    if dock_i < 0:
+        raise SystemExit('dock not found')
+    dock_j = s.find('</nav>', dock_i)
+    dock = s[dock_i:dock_j]
+    for pat, tag in ((r'<a class="lnk" href="https://t\.me/Evorez".*?</a>', 'telegram lnk'),
+                     (r'<a class="lnk" href="https://github\.com/Evorez".*?</a>', 'github lnk')):
+        m = re.search(pat, dock, re.S)
+        if not m:
+            raise SystemExit('dock link not found: ' + tag)
+        dock = dock.replace(m.group(0), '')
+    s = s[:dock_i] + dock + s[dock_j:]
+
+    # theme icon: a real moon / sun that follows the current theme
+    old_btn = '<button class="iconbtn" id="appearBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="appearPop" aria-label="Appearance: theme and accent colour" title="Appearance">\u25d0</button>'
+    MOON = ('<svg class="ic-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+            '<path d="M20.5 14.3A8.6 8.6 0 0 1 9.7 3.5a8.7 8.7 0 1 0 10.8 10.8Z" '
+            'stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>')
+    SUN = ('<svg class="ic-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+           '<circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.7"/>'
+           '<path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6'
+           'M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6" stroke="currentColor" stroke-width="1.7" '
+           'stroke-linecap="round"/></svg>')
+    new_btn = ('<button class="iconbtn" id="appearBtn" type="button" aria-haspopup="dialog" '
+               'aria-expanded="false" aria-controls="appearPop" '
+               'aria-label="Appearance: theme and accent colour" title="Appearance">'
+               + MOON + SUN + '</button>')
+    if old_btn not in s:
+        raise SystemExit('appear button markup not found')
+    s = s.replace(old_btn, new_btn, 1)
+
+    PILL_CSS = """
+/* ---------- pill fixes: real theme icon, 5 buttons ---------- */
+#appearBtn{font-size:0;line-height:0}
+#appearBtn svg{width:21px;height:21px;display:block}
+#appearBtn .ic-sun{display:none}
+html[data-theme="light"] #appearBtn .ic-moon{display:none}
+html[data-theme="light"] #appearBtn .ic-sun{display:block}
+@media (max-width:560px){
+  #appearBtn svg{width:19px;height:19px}
+}
+/* the header buttons read as frosted glass over the rain */
+.pact{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
+  backdrop-filter:blur(22px) saturate(165%);-webkit-backdrop-filter:blur(22px) saturate(165%);
+  border-color:rgba(150,255,200,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 18px 50px -34px rgba(var(--green-rgb),.9)}
+.pact:hover{backdrop-filter:blur(26px) saturate(185%);-webkit-backdrop-filter:blur(26px) saturate(185%)}
+html[data-theme="light"] .pact{background:rgba(255,255,255,.5);border-color:rgba(10,21,16,.1)}
+/* the rain sits under every layer; the hero card must stay flat or Chromium drops
+   its backdrop blur and the columns show through the glass as sharp glyphs */
+#rain{z-index:-1;opacity:.62}
+html[data-theme="light"] #rain{opacity:.34}
+.card{transform-style:flat;background:linear-gradient(180deg,rgba(8,14,11,.9),rgba(5,8,7,.93))}
+"""
+    pj = s.rfind('</style>')
+    s = s[:pj] + PILL_CSS + s[pj:]
+
+    # ---- matrix rain: rewrite the renderer ----
+    rs = s.find('  /* matrix rain */')
+    if rs < 0:
+        raise SystemExit('rain block start not found')
+    re_end = s.find('  requestAnimationFrame(frame);\n})();', rs)
+    if re_end < 0:
+        raise SystemExit('rain block end not found')
+    re_end += len('  requestAnimationFrame(frame);\n})();')
+    RAIN = """  /* matrix rain: 0 / 1 only, bold heads, theme aware (never a grey box in light) */
+  var c = document.getElementById('rain');
+  if(!c || reduce) return;
+  var ctx = c.getContext('2d', {alpha:true});
+  var GLYPH = ['0', '1'];
+  var BG_DARK = '#050607', BG_LIGHT = '#eef1ec';
+  var fs = 16, colW = 15, w = 0, h = 0, cols = 0, rows = 0, dpr = 1;
+  var y = [], sp = [], ph = [], light = false, seededLight = null;
+
+  function themeIsLight(){
+    return document.documentElement.getAttribute('data-theme') === 'light';
+  }
+
+  function seed(i, first){
+    y[i] = first ? -Math.random() * rows * 1.25 : -Math.random() * 7 - 1;
+    sp[i] = 7 + Math.random() * 13;            /* cells per second */
+    ph[i] = Math.random();
+  }
+
+  function size(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = c.clientWidth || window.innerWidth;
+    h = c.clientHeight || window.innerHeight;
+    c.width = Math.floor(w * dpr); c.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.textBaseline = 'top';
+    cols = Math.max(1, Math.ceil(w / colW));
+    rows = Math.ceil(h / fs) + 2;
+    y = new Array(cols); sp = new Array(cols); ph = new Array(cols);
+    for (var i = 0; i < cols; i++) seed(i, true);
+    light = themeIsLight(); seededLight = light;
+    ctx.fillStyle = light ? BG_LIGHT : BG_DARK;
+    ctx.fillRect(0, 0, w, h);
+  }
+  size();
+  window.addEventListener('resize', size, {passive:true});
+
+  var prevT = 0, running = true;
+  document.addEventListener('visibilitychange', function(){ running = !document.hidden; prevT = 0; });
+
+  /* perf: behind the arcade / chat the rain sits under a heavy blur anyway */
+  var gameLayerEl = document.getElementById('gameLayer');
+  var termLayerEl = document.getElementById('termLayer');
+  function modalOpen(){
+    return !!((gameLayerEl && !gameLayerEl.hidden) || (termLayerEl && !termLayerEl.hidden));
+  }
+
+  function frame(t){
+    requestAnimationFrame(frame);
+    if(!running || document.hidden) return;
+    if(modalOpen()) return;
+    if(!prevT) prevT = t;
+    var dt = t - prevT;
+    if(dt < 3.4) return;                       /* runs at the panel's own refresh */
+    prevT = t;
+    var k = Math.min(dt / 1000, 0.25);         /* real seconds since the last frame */
+
+    light = themeIsLight();
+    if(light !== seededLight){                 /* theme flipped: repaint the plate */
+      ctx.fillStyle = light ? BG_LIGHT : BG_DARK;
+      ctx.fillRect(0, 0, w, h);
+      seededLight = light;
+    }
+
+    var fadeA = 1 - Math.pow(0.12, k);         /* ~3% per 60 Hz frame: long tails */
+    ctx.fillStyle = light
+      ? 'rgba(238,241,236,' + fadeA.toFixed(3) + ')'
+      : 'rgba(5,6,7,' + fadeA.toFixed(3) + ')';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.font = '600 ' + fs + 'px JBMonoEmbed, ui-monospace, monospace';
+    for(var i = 0; i < cols; i++){
+      var cell = Math.floor(y[i]);
+      if(cell >= 0 && cell < rows){
+        var x = i * colW + 2, py = cell * fs;
+        ctx.fillStyle = light ? 'rgba(6,90,50,.9)' : 'rgba(212,255,229,.95)';
+        ctx.shadowColor = light ? 'rgba(6,120,66,.55)' : 'rgba(64,255,150,.9)';
+        ctx.shadowBlur = light ? 6 : 11;
+        ctx.fillText(GLYPH[ph[i] > 0.5 ? 1 : 0], x, py);
+        ctx.shadowBlur = 0;
+        if(cell > 0){                          /* the cell above keeps the green body tone */
+          ctx.fillStyle = light ? 'rgba(14,124,70,.45)' : 'rgba(78,232,148,.6)';
+          ctx.fillText(GLYPH[(Math.random() * 2) | 0], x, (cell - 1) * fs);
+        }
+      }
+      y[i] += sp[i] * k;
+      if(y[i] - 1 > rows + Math.random() * 10) seed(i, false);
+    }
+  }
+  requestAnimationFrame(frame);
+})();"""
+    s = s[:rs] + RAIN + s[re_end:]
+    log.append('%-28s %s' % ('rain: rewritten', 'theme aware'))
+    log.append('%-28s %s' % ('pill:', 'github/telegram out, theme icon in'))
+
     # 5f. the terminal becomes the chat: drop py-lite + the terminal script, swap the panel
     py_a = s.find('/* ---------- py-lite')
     if py_a == -1:

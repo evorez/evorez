@@ -679,6 +679,28 @@ html[data-theme="light"] .avatar--lg{box-shadow:0 0 0 1px rgba(var(--green-rgb),
   .profile__sub{font-size:11.5px}
   .pact{height:48px;font-size:11.5px;letter-spacing:.1em}
 }
+
+/* ---------- pill fixes: real theme icon, 5 buttons ---------- */
+#appearBtn{font-size:0;line-height:0}
+#appearBtn svg{width:21px;height:21px;display:block}
+#appearBtn .ic-sun{display:none}
+html[data-theme="light"] #appearBtn .ic-moon{display:none}
+html[data-theme="light"] #appearBtn .ic-sun{display:block}
+@media (max-width:560px){
+  #appearBtn svg{width:19px;height:19px}
+}
+/* the header buttons read as frosted glass over the rain */
+.pact{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
+  backdrop-filter:blur(22px) saturate(165%);-webkit-backdrop-filter:blur(22px) saturate(165%);
+  border-color:rgba(150,255,200,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 18px 50px -34px rgba(var(--green-rgb),.9)}
+.pact:hover{backdrop-filter:blur(26px) saturate(185%);-webkit-backdrop-filter:blur(26px) saturate(185%)}
+html[data-theme="light"] .pact{background:rgba(255,255,255,.5);border-color:rgba(10,21,16,.1)}
+/* the rain sits under every layer; the hero card must stay flat or Chromium drops
+   its backdrop blur and the columns show through the glass as sharp glyphs */
+#rain{z-index:-1;opacity:.62}
+html[data-theme="light"] #rain{opacity:.34}
+.card{transform-style:flat;background:linear-gradient(180deg,rgba(8,14,11,.9),rgba(5,8,7,.93))}
 /* ---------- chat: bubbles, typing dots, starter chips ---------- */
 .chat__log{display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
 .msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:12.5px;line-height:1.62;
@@ -760,7 +782,7 @@ r.setAttribute('data-theme',t);r.setAttribute('data-accent',c);r.setAttribute('d
   <div class="dock" id="dock">
     <nav class="links" aria-label="Contact">
       <div class="appear">
-        <button class="iconbtn" id="appearBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="appearPop" aria-label="Appearance: theme and accent colour" title="Appearance">◐</button>
+        <button class="iconbtn" id="appearBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="appearPop" aria-label="Appearance: theme and accent colour" title="Appearance"><svg class="ic-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.5 14.3A8.6 8.6 0 0 1 9.7 3.5a8.7 8.7 0 1 0 10.8 10.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><svg class="ic-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
         
       </div>
       <button class="iconbtn musbtn" id="musicBtn" type="button" aria-pressed="false" aria-label="Music: off" title="Music">
@@ -775,14 +797,8 @@ r.setAttribute('data-theme',t);r.setAttribute('data-accent',c);r.setAttribute('d
         <span class="tgl__txt">ARCADE</span>
         <span class="tgl__track" aria-hidden="true"><span class="tgl__knob"></span></span>
       </button>
-      <a class="lnk" href="https://t.me/Evorez" target="_blank" rel="noopener noreferrer" aria-label="Telegram @Evorez (opens in a new tab)">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.3 18.6 20.1c-.25 1.12-.92 1.4-1.86.87l-5.14-3.79-2.48 2.4c-.28.28-.51.51-1.04.51l.37-5.27 9.57-8.65c.42-.37-.09-.58-.64-.21L5.5 13.1.42 11.5c-1.1-.34-1.13-1.1.23-1.63L20.5 2.3c.92-.34 1.72.21 1.44 2z"/></svg>
-        <span>@Evorez</span>
-      </a>
-      <a class="lnk" href="https://github.com/Evorez" target="_blank" rel="noopener noreferrer" aria-label="GitHub @Evorez (opens in a new tab)">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>
-        <span>@Evorez</span>
-      </a>
+      
+      
       <a class="lnk" href="mailto:evorez.alive@gmail.com" aria-label="Email evorez.alive@gmail.com"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.6" y="4.6" width="18.8" height="14.8" rx="3.2" stroke="currentColor" stroke-width="1.7"/><path d="m4 7 7.1 5.2a1.6 1.6 0 0 0 1.9 0L20 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Gmail</span></a>
     </nav>
   </div>
@@ -952,73 +968,93 @@ window.__pal = (function(){
     }
   }
 
-  /* matrix rain */
+  /* matrix rain: 0 / 1 only, bold heads, theme aware (never a grey box in light) */
   var c = document.getElementById('rain');
   if(!c || reduce) return;
   var ctx = c.getContext('2d', {alpha:true});
-  var chars = ('01').split('');
-  var fs = 15, w = 0, h = 0, cols = 0, drops = [], dpr = 1;
+  var GLYPH = ['0', '1'];
+  var BG_DARK = '#050607', BG_LIGHT = '#eef1ec';
+  var fs = 16, colW = 15, w = 0, h = 0, cols = 0, rows = 0, dpr = 1;
+  var y = [], sp = [], ph = [], light = false, seededLight = null;
+
+  function themeIsLight(){
+    return document.documentElement.getAttribute('data-theme') === 'light';
+  }
+
+  function seed(i, first){
+    y[i] = first ? -Math.random() * rows * 1.25 : -Math.random() * 7 - 1;
+    sp[i] = 7 + Math.random() * 13;            /* cells per second */
+    ph[i] = Math.random();
+  }
 
   function size(){
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    w = c.clientWidth; h = c.clientHeight;
+    w = c.clientWidth || window.innerWidth;
+    h = c.clientHeight || window.innerHeight;
     c.width = Math.floor(w * dpr); c.height = Math.floor(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.textBaseline = 'top';
-    var next = Math.max(1, Math.floor(w / fs));
-    if (next !== cols){
-      cols = next;
-      drops = new Array(cols);
-      for (var i=0;i<cols;i++) drops[i] = Math.random() * -h / fs;
-    }
+    cols = Math.max(1, Math.ceil(w / colW));
+    rows = Math.ceil(h / fs) + 2;
+    y = new Array(cols); sp = new Array(cols); ph = new Array(cols);
+    for (var i = 0; i < cols; i++) seed(i, true);
+    light = themeIsLight(); seededLight = light;
+    ctx.fillStyle = light ? BG_LIGHT : BG_DARK;
+    ctx.fillRect(0, 0, w, h);
   }
   size();
   window.addEventListener('resize', size, {passive:true});
 
-  var last = 0, running = true, prevT = 0;
-  document.addEventListener('visibilitychange', function(){ running = !document.hidden; if(running) last = 0; });
+  var prevT = 0, running = true;
+  document.addEventListener('visibilitychange', function(){ running = !document.hidden; prevT = 0; });
 
-  /* perf: while the arcade or the terminal is open the rain sits behind a heavy blur anyway —
-     freeze it so the compositor does not re-blur a moving canvas every frame */
+  /* perf: behind the arcade / chat the rain sits under a heavy blur anyway */
   var gameLayerEl = document.getElementById('gameLayer');
   var termLayerEl = document.getElementById('termLayer');
   function modalOpen(){
     return !!((gameLayerEl && !gameLayerEl.hidden) || (termLayerEl && !termLayerEl.hidden));
   }
 
-  ctx.font = fs + 'px JBMonoEmbed, ui-monospace, monospace';
-
   function frame(t){
     requestAnimationFrame(frame);
-    if (!running || document.hidden) return;
-    if (modalOpen()) return;        /* frozen behind the blurred modal layer */
-    /* frame-rate independent: runs at the panel's own refresh (120 / 144 Hz panels
-       really do get 120 / 144 fps) while moving and fading at the same speed as before */
-    if (!prevT) prevT = t;
+    if(!running || document.hidden) return;
+    if(modalOpen()) return;
+    if(!prevT) prevT = t;
     var dt = t - prevT;
-    if (dt < 3.4) return;                 /* ceiling ~290 fps, no runaway on odd panels */
+    if(dt < 3.4) return;                       /* runs at the panel's own refresh */
     prevT = t;
-    var step = dt / 66;                   /* 1.0 == one old frame's worth of motion */
-    if (step > 4) step = 4;               /* after a stall, never leap */
+    var k = Math.min(dt / 1000, 0.25);         /* real seconds since the last frame */
 
-    ctx.fillStyle = 'rgba(5,6,7,' + (1 - Math.pow(0.84, step)).toFixed(3) + ')';
+    light = themeIsLight();
+    if(light !== seededLight){                 /* theme flipped: repaint the plate */
+      ctx.fillStyle = light ? BG_LIGHT : BG_DARK;
+      ctx.fillRect(0, 0, w, h);
+      seededLight = light;
+    }
+
+    var fadeA = 1 - Math.pow(0.12, k);         /* ~3% per 60 Hz frame: long tails */
+    ctx.fillStyle = light
+      ? 'rgba(238,241,236,' + fadeA.toFixed(3) + ')'
+      : 'rgba(5,6,7,' + fadeA.toFixed(3) + ')';
     ctx.fillRect(0, 0, w, h);
-    ctx.font = fs + 'px JBMonoEmbed, ui-monospace, monospace';
 
-    for (var i = 0; i < cols; i++){
-      var ch = chars[(Math.random() * chars.length) | 0];
-      var y = drops[i] * fs;
-      if (Math.random() < 0.012 * step){
-        ctx.fillStyle = PAL.light9;   /* rare bright head char */
-        ctx.shadowColor = ga(0.8); ctx.shadowBlur = 8;
-      } else {
-        ctx.fillStyle = aa(0.42);
+    ctx.font = '600 ' + fs + 'px JBMonoEmbed, ui-monospace, monospace';
+    for(var i = 0; i < cols; i++){
+      var cell = Math.floor(y[i]);
+      if(cell >= 0 && cell < rows){
+        var x = i * colW + 2, py = cell * fs;
+        ctx.fillStyle = light ? 'rgba(6,90,50,.9)' : 'rgba(212,255,229,.95)';
+        ctx.shadowColor = light ? 'rgba(6,120,66,.55)' : 'rgba(64,255,150,.9)';
+        ctx.shadowBlur = light ? 6 : 11;
+        ctx.fillText(GLYPH[ph[i] > 0.5 ? 1 : 0], x, py);
         ctx.shadowBlur = 0;
+        if(cell > 0){                          /* the cell above keeps the green body tone */
+          ctx.fillStyle = light ? 'rgba(14,124,70,.45)' : 'rgba(78,232,148,.6)';
+          ctx.fillText(GLYPH[(Math.random() * 2) | 0], x, (cell - 1) * fs);
+        }
       }
-      ctx.fillText(ch, i * fs, y);
-      ctx.shadowBlur = 0;
-      if (y > h && Math.random() < 0.028 * step) drops[i] = 0;
-      drops[i] += step;
+      y[i] += sp[i] * k;
+      if(y[i] - 1 > rows + Math.random() * 10) seed(i, false);
     }
   }
   requestAnimationFrame(frame);
