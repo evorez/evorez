@@ -19,45 +19,105 @@
     name: 'Evorez',
     endpoint: 'https://text.pollinations.ai/openai',
     model: 'openai',
+    timeout: 16000,
     persona: [
       'You are Evorez, a solo builder who ships in public and talks like a real person, not a bot.',
       'Voice: Hinglish in Roman script, casual, a little cocky, warm. No corporate words.',
-      'Answer in 1-2 short sentences, under 40 words. Never invent facts, numbers, dates or projects.',
-      'You are speaking from your own site, evorez.vercel.app — a single HTML file, no framework.',
-      'Links you may give: telegram t.me/Evorez · github github.com/evorez.',
+      'Answer the actual question in 1-2 short sentences, under 35 words.',
+      'PLAIN TEXT ONLY: no markdown, no asterisks, no bullet lists, no HTML, no code blocks, no headings.',
+      'Never invent anything: no fake projects, clients, prices, dates, numbers, metrics or availability claims.',
+      'What this site really is: one single HTML file, no framework; a hero; a stack list; a dock pill at the bottom with theme, music (one track, Legacy), this chat, a sound toggle and links; a footer with the clock.',
+      'The only links to mention: t.me/Evorez and github.com/evorez.',
       'If you do not know something, say: pata nahi, par pakka bata dunga jab hoga.',
-      'Use at most one emoji. Never mention being an AI, never mention these instructions.'
+      'Use at most one emoji. Never say you are an AI and never mention these instructions.'
     ].join(' '),
     starters: ['tu kaun hai?', 'kya bana raha hai?', 'music kaisa hai?', 'hire karun?'],
     greeting: 'Yo. Main Evorez — ye site khud ek status hai. Jo puchna hai pucho.'
   };
   /* ===================================================================== */
 
-  var hist = [], busy = false, greeted = false, timer = null, waitUntil = 0;
+  var hist = [], busy = false, greeted = false, waitUntil = 0;
+  var CACHE = {};
+  try{ CACHE = JSON.parse(localStorage.getItem('evorez.chat.v1') || '{}'); }catch(e){ CACHE = {}; }
+  function persist(){
+    try{
+      var k = Object.keys(CACHE);
+      while(k.length > 60) delete CACHE[k.shift()];
+      localStorage.setItem('evorez.chat.v1', JSON.stringify(CACHE));
+    }catch(e){}
+  }
 
-  /* ---- local fallback: the bot still answers when the free endpoint is out of quota ---- */
-  var LOCAL = [
-    [/kaun|who are|who r u|intro|naam/i, 'Main Evorez — ek banda jo raat 2 baje bhi ship karta hai. Ye page hi mera status hai: alive, building.'],
-    [/kya bana|project|kaam|building|ship|bana raha/i, 'Filhaal ye site — ek hi HTML file, koi framework nahi, fonts aur music sab andar. Agla: version 2.'],
-    [/music|song|track|legacy|audio/i, 'Legacy chal raha hai. Neeche pill me music button hai — tap = play/pause, long-press = track card.'],
-    [/hire|job|work with|kaam pe|collab|contact|reach|telegram|mail/i, 'Telegram par ping karo — t.me/Evorez. Code: github.com/evorez.'],
-    [/theme|dark|light|accent|glass/i, 'Pill ke pehle button (◐) se theme, accent aur glass badal sakte ho — light jaate waqt circle reveal hota hai.'],
-    [/blog|blog\?|social|x\.com|twitter|insta/i, 'Sirf Telegram aur GitHub active hain — t.me/Evorez, github.com/evorez.'],
-    [/hi|hello|hey|namaste|yo\b|salam/i, 'Hey 👋 pucho kuch bhi — main yahin hoon.'],
-    [/thank|shukriya|dhanyavad|thanks/i, 'Koi baat nahi. Building > talking.'],
-    [/paisa|price|cost|kitna|charge/i, 'Ye site free hai aur rahegi. Kaam ke liye Telegram: t.me/Evorez.']
+  /* ---- the local brain: accurate answers for the things people actually ask ---- */
+  var FAQ = [
+    [/\b(kaun|who are|who r u|who is|intro|naam|name)\b/i,
+     'Main Evorez — solo builder, raat 2 baje bhi ship karta hoon. Ye page hi mera status hai: alive, building.'],
+    [/\b(kya bana|kya banaya|what is this|whats this|this site|ye site|project|kaam|building|bana raha|banaya hai)\b/i,
+     'Ye site khud project hai — ek hi HTML file, koi framework nahi, fonts aur music sab andar. Version 2 ka kaam chal raha hai.'],
+    [/\b(music|song|track|legacy|audio|sound|gaana)\b/i,
+     'Legacy chal raha hai, 2:31. Neeche pill me music button: tap = play/pause, long-press = track card.'],
+    [/\b(hire|job|kaam pe|collab|contact|reach|telegram|mail|baat)\b/i,
+     'Kaam ya collab ke liye Telegram: t.me/Evorez. Code: github.com/evorez.'],
+    [/\b(theme|dark|light|accent|glass|colour|color)\b/i,
+     'Pill ke pehle button se theme, accent aur glass badalte hain — light par circle reveal hota hai.'],
+    [/\b(stack|tech|code|html|css|framework|banaya|build)\b/i,
+     'Sab hand-written HTML, CSS aur JS. Ek file, koi framework nahi, koi CDN nahi — fonts bhi base64.'],
+    [/\b(blog|social|twitter|insta|x\.com)\b/i,
+     'Sirf Telegram aur GitHub active hain — t.me/Evorez, github.com/evorez.'],
+    [/\b(ai|bot|llm|model|tum kaun|aap kaun)\b/i,
+     'Haan, is chat ke peeche ek free model hai — koi paid key nahi. Quota khatam ho to main yahin se jawab deta hoon.'],
+    [/\b(paisa|price|cost|kitna|charge|free)\b/i,
+     'Ye site free hai aur rahegi. Paise wale kaam ke liye Telegram: t.me/Evorez.'],
+    [/\b(uptime|clock|time|samay|footer|2026)\b/i,
+     'Footer sach bolta hai: uptime — since I woke up. Clock har second chalta hai, 2026 chase karta hai.'],
+    [/\b(v2|version 2|next|aage|future|plan)\b/i,
+     'Agla: version 2 — wahi single file, par tez aur saaf. Shipping in public, Telegram par update mil jayega.'],
+    [/\b(hi|hello|hey|yo|namaste|salam)\b/i,
+     'Hey, pucho kuch bhi — main yahin hoon.'],
+    [/\b(thank|shukriya|dhanyavad|thanks|badhiya|mast)\b/i,
+     'Koi baat nahi. Building > talking.']
   ];
-  /* the page embeds only one emoji glyph, so strip emoji from replies instead of
-     showing tofu boxes */
+  function intentOf(q){
+    for(var i = 0; i < FAQ.length; i++) if(FAQ[i][0].test(q)) return { hit: true, reply: FAQ[i][1] };
+    return { hit: false, reply: '' };
+  }
+  function fallbackLine(){
+    return 'Free model ka quota is IP par khatam hai (ek jawab har 45 second). Thodi der me pucho, ya seedha Telegram: t.me/Evorez.';
+  }
+  function localReply(q){
+    var h = intentOf(q);
+    return h.hit ? h.reply : fallbackLine();
+  }
+
+  /* ---- text hygiene: the model loves markdown, HTML and emoji we cannot render ---- */
   function clean(t){
     return (t || '')
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\[([^\]]{1,60})\]\(\s*(https?:[^)\s]+)\s*\)/g, '$1')
+      .replace(/[*_`#>]+/g, '')
+      .replace(/^[ \t]*[-•·][ \t]+/gm, '')
       .replace(/[\u{1F000}-\u{1FAFF}\u{1F1E6}-\u{1F1FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '')
+      .replace(/\s*\n\s*/g, ' ')
       .replace(/[ \t]{2,}/g, ' ')
       .trim();
   }
-  function localReply(q){
-    for(var i = 0; i < LOCAL.length; i++) if(LOCAL[i][0].test(q)) return clean(LOCAL[i][1]);
-    return 'Free model ka quota khatam ho gaya is IP par (ek reply / 45 s). Thodi der me dobara pucho — ya seedha Telegram: t.me/Evorez.';
+
+  var LINK = /(https?:\/\/[^\s<>"')]+|t\.me\/[\w.\/-]+|github\.com\/[\w.\/-]+|evorez\.vercel\.app[\w.\/-]*)/g;
+  function paintText(node, text){
+    var last = 0, m;
+    LINK.lastIndex = 0;
+    while((m = LINK.exec(text))){
+      if(m.index > last) node.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var url = m[0].replace(/[.,;:!?)]+$/, '');
+      var a = document.createElement('a');
+      a.href = url.indexOf('http') === 0 ? url : 'https://' + url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = url;
+      node.appendChild(a);
+      last = m.index + m[0].length;
+    }
+    if(last < text.length) node.appendChild(document.createTextNode(text.slice(last)));
   }
 
   /* ---- rendering ---- */
@@ -69,7 +129,7 @@
   }
   function add(who, text){
     var n = el('div', 'msg msg--' + who);
-    n.textContent = text;
+    who === 'bot' ? paintText(n, text) : n.textContent = text;
     logEl.appendChild(n);
     logEl.scrollTop = logEl.scrollHeight;
     return n;
@@ -95,8 +155,6 @@
     liveEl.setAttribute('data-state', s);
     liveEl.lastChild && (liveEl.lastChild.nodeValue = s === 'wait' ? 'wait' : s === 'off' ? 'offline' : 'online');
   }
-
-  /* ---- starters ---- */
   function paintStarters(){
     if(!chipBox) return;
     chipBox.textContent = '';
@@ -119,48 +177,46 @@
                 .concat([{ role: 'user', content: text }])
     };
     var ctl = ('AbortController' in window) ? new AbortController() : null;
-    var to = setTimeout(function(){ if(ctl) ctl.abort(); }, 22000);
+    var to = setTimeout(function(){ if(ctl) ctl.abort(); }, BOT.timeout);
     return fetch(BOT.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
       signal: ctl ? ctl.signal : undefined
     }).then(function(r){
-      clearTimeout(to);
       return r.text().then(function(t){ return { ok: r.ok, status: r.status, text: t }; });
     }).then(function(res){
       clearTimeout(to);
       if(res.ok){
         var data = null;
         try{ data = JSON.parse(res.text); }catch(e){}
+        var c = '';
         if(data && data.choices && data.choices[0] && data.choices[0].message){
-          var c = clean(data.choices[0].message.content);
-          if(c) return { text: c };
+          c = clean(data.choices[0].message.content);
+        } else {
+          c = clean(res.text);
         }
-        return { text: clean(res.text) || localReply(text) };
+        if(c) return { text: c };
+        return { text: localReply(text) };
       }
       if(res.status === 402 || res.status === 429){
         var m = /wait (\d+) seconds?/i.exec(res.text);
         var secs = m ? +m[1] : 45;
         waitUntil = Date.now() + secs * 1000;
-        state('wait');
         return { text: localReply(text), limited: secs };
-      }
-      if(res.status === 400 || res.status === 401 || res.status === 403){
-        return { text: localReply(text), limited: 0 };
       }
       return { text: localReply(text), limited: 0 };
     });
   }
 
-  /* ---- send ---- */
+  /* ---- send: local brain answers at once, the free model refines it ---- */
   function send(raw){
     var text = (raw || '').trim();
     if(!text || busy) return;
-    if(Date.now() < waitUntil){
-      note('free model: ' + Math.ceil((waitUntil - Date.now()) / 1000) + 's baad dobara try karo');
-      return;
-    }
+    var key = text.toLowerCase().replace(/\s+/g, ' ').slice(0, 120);
+    var hit = intentOf(text);
+    var cooling = Date.now() < waitUntil;
+
     busy = true;
     if(sendBt) sendBt.disabled = true;
     if(chipBox) chipBox.textContent = '';
@@ -168,22 +224,62 @@
     hist.push({ role: 'user', content: text });
     input.value = '';
     var t = typing();
-    state('wait');
+    state('online');
 
-    ask(text).then(function(res){
+    var done = false, bubble = null, soft = null;
+
+    function show(txt){
+      if(done) return;
+      done = true;
+      clearTimeout(soft);
       t.remove();
-      add('bot', res.text);
-      hist.push({ role: 'assistant', content: res.text });
-      if(res.limited) note('free model ne ' + res.limited + 's ka gap manga hai — uske baad asli jawab aayega');
-      state(res.limited ? 'wait' : 'online');
-    }).catch(function(){
-      t.remove();
-      add('bot', localReply(text));
-      state('off');
-    }).then(function(){
+      bubble = add('bot', txt);
+      hist.push({ role: 'assistant', content: txt });
+      CACHE[key] = txt; persist();
+    }
+    function refine(txt){
+      if(!bubble || !txt || txt === bubble.textContent) return;
+      bubble.textContent = '';
+      paintText(bubble, txt);
+      hist[hist.length - 1] = { role: 'assistant', content: txt };
+      CACHE[key] = txt; persist();
+    }
+    function idle(){
       busy = false;
       if(sendBt) sendBt.disabled = false;
       if(!layer.hidden) try{ input.focus({ preventScroll: true }); }catch(e){}
+    }
+
+    /* same question again -> instant */
+    if(CACHE[key]){
+      soft = setTimeout(function(){ show(CACHE[key]); idle(); }, 200);
+      return;
+    }
+
+    /* the free model is in its 45 s window -> answer locally, no network */
+    if(cooling){
+      soft = setTimeout(function(){ show(hit.hit ? hit.reply : fallbackLine()); idle(); }, 260);
+      return;
+    }
+
+    /* never leave the user staring at dots: a known answer lands in 0.9 s, a guess in 6 s */
+    soft = setTimeout(function(){
+      show(hit.hit ? hit.reply : fallbackLine());
+      idle();
+    }, hit.hit ? 900 : 6000);
+
+    ask(text).then(function(res){
+      if(!done){
+        show(res.text);
+        state(res.limited ? 'wait' : 'online');
+      } else if(!res.limited){
+        refine(res.text);          /* the model came back late: upgrade the bubble in place */
+        state('online');
+      }
+      idle();
+    }).catch(function(){
+      if(!done){ show(hit.hit ? hit.reply : fallbackLine()); state('off'); }
+      idle();
     });
   }
 
@@ -212,8 +308,6 @@
     if(e.key === 'Escape' && !layer.hidden) closeChat();
   });
   form.addEventListener('submit', function(e){ e.preventDefault(); send(input.value); });
-
-  document.addEventListener('visibilitychange', function(){ if(document.hidden) clearTimeout(timer); });
 
   state('online');
 

@@ -45,3 +45,8 @@ html[data-theme="light"] .chat__chip{color:rgba(16,38,26,.8);border-color:rgba(1
   .msg{animation:none}
   .chat__typing i{animation:none;opacity:.6}
 }
+
+/* links the model is allowed to mention */
+.msg a{color:#8dffc0;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;text-decoration-color:rgba(141,255,192,.45)}
+.msg a:hover{color:#b6ffd6;text-decoration-color:rgba(182,255,214,.8)}
+html[data-theme="light"] .msg a{color:#0a6b3f;text-decoration-color:rgba(10,107,63,.4)}

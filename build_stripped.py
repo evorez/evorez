@@ -119,23 +119,23 @@ ROMAN_NEW = ('<p class="rome">All Eyes On You'
 DOCK_CSS = r'''
 /* ---------- floating iOS dock: every nav icon lives in one pill ---------- */
 .dock{position:fixed;left:50%;bottom:calc(21px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;
-  padding:7px;border-radius:999px;display:flex;align-items:center;
+  padding:8px;border-radius:999px;display:flex;align-items:center;
   background:rgba(10,18,14,.44);border:1px solid rgba(150,255,200,.16);
   backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
   box-shadow:0 22px 60px -26px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.14)}
-.dock .links{margin:0;display:flex;align-items:center;gap:5px;flex-wrap:nowrap}
+.dock .links{margin:0;display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
 .dock .lnk,.dock .iconbtn,.dock .termbtn,.dock .tgl{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);
-  box-shadow:none;border-radius:999px;height:40px;color:rgba(226,244,232,.86)}
-.dock .iconbtn,.dock .lnk,.dock .termbtn{width:40px;padding:0}
+  box-shadow:none;border-radius:999px;height:46px;color:rgba(226,244,232,.86)}
+.dock .iconbtn,.dock .lnk,.dock .termbtn{width:46px;padding:0}
 .dock .lnk,.dock .termbtn{justify-content:center;font-size:0}
-.dock .lnk svg,.dock .termbtn svg{width:18px;height:18px}
-.dock .tgl{height:40px;padding:0 12px 0 13px;gap:8px}
+.dock .lnk svg,.dock .termbtn svg{width:20px;height:20px}
+.dock .tgl{height:46px;padding:0 14px 0 15px;gap:9px;font-size:11px}
 .dock .lnk:hover,.dock .iconbtn:hover,.dock .termbtn:hover,.dock .tgl:hover{background:rgba(255,255,255,.13);color:#eafff2;transform:translateY(-2px)}
 .dock .iconbtn:active,.dock .lnk:active,.dock .termbtn:active,.dock .tgl:active{transform:scale(.94)}
-.dock .pop{position:fixed;top:auto;bottom:calc(99px + env(safe-area-inset-bottom,0px));left:50%;right:auto;
+.dock .pop{position:fixed;top:auto;bottom:calc(105px + env(safe-area-inset-bottom,0px));left:50%;right:auto;
   z-index:90;animation:none;
   /* dynamic-island morph: the card is pulled out of the pill, then settles */
-  transform-origin:50% calc(100% + 54px);
+  transform-origin:50% calc(100% + 52px);
   border-radius:999px;
   transform:translateX(-50%) translateY(6px) scale(.32,.18);
   opacity:0;filter:blur(6px);
@@ -145,18 +145,18 @@ DOCK_CSS = r'''
   .dock .pop{transition:opacity .15s linear;transform:translateX(-50%);border-radius:18px;filter:none}
   .dock .pop.is-open{transform:translateX(-50%)}
 }
-.shell{padding-bottom:118px}
+.shell{padding-bottom:126px}
 html[data-theme="light"] .dock{background:rgba(255,255,255,.6);border-color:rgba(10,21,16,.1);
   box-shadow:0 22px 60px -30px rgba(10,21,16,.5),inset 0 1px 0 #fff}
 html[data-theme="light"] .dock .lnk,html[data-theme="light"] .dock .iconbtn,html[data-theme="light"] .dock .termbtn,html[data-theme="light"] .dock .tgl{
   background:rgba(255,255,255,.72);border-color:rgba(10,21,16,.1);color:rgba(16,38,26,.8)}
 @media (max-width:560px){
-  .dock{padding:6px;bottom:calc(17px + env(safe-area-inset-bottom,0px))}
-  .dock .links{gap:4px}
-  .dock .iconbtn,.dock .lnk,.dock .termbtn{width:37px;height:37px}
-  .dock .tgl{height:37px;padding:0 10px}
-  .dock .pop{bottom:calc(87px + env(safe-area-inset-bottom,0px))}
-  .shell{padding-bottom:104px}
+  .dock{padding:7px;bottom:calc(17px + env(safe-area-inset-bottom,0px))}
+  .dock .links{gap:5px}
+  .dock .iconbtn,.dock .lnk,.dock .termbtn{width:42px;height:42px}
+  .dock .tgl{height:42px;padding:0 12px;font-size:10.5px}
+  .dock .pop{bottom:calc(91px + env(safe-area-inset-bottom,0px))}
+  .shell{padding-bottom:116px}
 }
 '''
 
@@ -283,14 +283,14 @@ TRACK_CSS = r"""
 /* ---------- island popovers: morph out of the pill + blurred backdrop ---------- */
 /* the card keeps ONE shape: same radius, uniform scale, monotonic easing —
    it rises out of the pill and settles, nothing goes square and nothing wobbles */
-.island{position:fixed;top:auto;bottom:calc(99px + env(safe-area-inset-bottom,0px));left:50%;right:auto;z-index:90;
-  animation:none;border-radius:18px;transform-origin:50% calc(100% + 61px);
+.island{position:fixed;top:auto;bottom:calc(105px + env(safe-area-inset-bottom,0px));left:50%;right:auto;z-index:90;
+  animation:none;border-radius:18px;transform-origin:50% calc(100% + 52px);
   transform:translateX(-50%) translateY(10px) scale(.94);
   opacity:0;filter:blur(3px);
   will-change:transform,opacity;
   transition:transform .32s cubic-bezier(.22,.68,.2,1),opacity .16s ease-out,filter .2s ease-out}
 .island.is-open{transform:translateX(-50%) translateY(0) scale(1);opacity:1;filter:blur(0)}
-@media (max-width:560px){.island{bottom:calc(87px + env(safe-area-inset-bottom,0px))}}
+@media (max-width:560px){.island{bottom:calc(91px + env(safe-area-inset-bottom,0px))}}
 @media (prefers-reduced-motion:reduce){
   .island{transition:opacity .15s linear;transform:translateX(-50%);filter:none}
   .island.is-open{transform:translateX(-50%)}
@@ -658,6 +658,21 @@ def main():
       drops[i] += step;""", 1)
     log.append('%-28s %d fps -> display' % ('rain:', 15))
 
+
+    # 5e3. the footer keeps 2026 Evorez + uptime on the bottom line
+    FOOT_CSS = """
+/* ---------- bottom line ---------- */
+.foot{padding-bottom:clamp(11px,1.6vw,16px)!important;font-size:11.5px;gap:8px 18px}
+.foot__name{color:var(--ink-2);font-weight:500;letter-spacing:.08em}
+#clock{letter-spacing:.1em}
+@media (max-width:560px){.foot{font-size:11px;gap:6px 14px;padding-bottom:12px!important}}
+"""
+    old_foot = '<span>\u00a9 <span id="yr">2026</span> Evorez</span>'
+    if old_foot not in s:
+        raise SystemExit("footer markup not found")
+    s = s.replace(old_foot, '<span class="foot__name"><span id="yr">2026</span> Evorez</span>', 1)
+    fj = s.find("</style>")
+    s = s[:fj] + FOOT_CSS + s[fj:]
 
     # 5f. the terminal becomes the chat: drop py-lite + the terminal script, swap the panel
     py_a = s.find('/* ---------- py-lite')
