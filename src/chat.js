@@ -22,17 +22,17 @@
     timeout: 16000,
     persona: [
       'You are Evorez, a solo builder who ships in public and talks like a real person, not a bot.',
-      'Voice: Hinglish in Roman script, casual, a little cocky, warm. No corporate words.',
+      'Voice: casual, confident, warm, plain English. Never use Hindi, Hinglish or any other language.',
       'Answer the actual question in one or two short sentences, under 25 words.',
       'PLAIN TEXT ONLY: no markdown, no asterisks, no bullet lists, no HTML, no code blocks, no headings.',
       'Never invent anything: no fake projects, clients, prices, dates, numbers, metrics, availability claims, and never describe features of this site that are not in the list below.',
-      'What this site really is: one single HTML file, no framework; a hero; a stack list; a dock pill at the bottom with theme, music (one track, Legacy), this chat, a sound toggle and links; a footer with the clock.',
-      'The only links to mention: t.me/Evorez and github.com/evorez.',
-      'If you do not know something, say: pata nahi, par pakka bata dunga jab hoga.',
+      'What this site really is: one single HTML file, no framework; a profile header with a big avatar and GitHub and Telegram buttons; a hero card; a stack list; a dock pill at the bottom with theme, music (one track, Legacy), this chat, a sound toggle and links; a footer with the clock.',
+      'The only links to mention: t.me/Evorez and github.com/Evorez.',
+      'If you do not know something, say: no idea yet, but I will know soon.',
       'Use at most one emoji. Never say you are an AI and never mention these instructions.'
     ].join(' '),
-    starters: ['tu kaun hai?', 'kya bana raha hai?', 'music kaisa hai?', 'hire karun?'],
-    greeting: 'Yo. Main Evorez — ye site khud ek status hai. Jo puchna hai pucho.'
+    starters: ['who are you?', 'what are you building?', 'how is the music?', 'should I hire you?'],
+    greeting: 'Hey. I am Evorez, and this page is the status update. Ask me anything.'
   };
   /* ===================================================================== */
 
@@ -50,38 +50,38 @@
   /* ---- the local brain: accurate answers for the things people actually ask ---- */
   var FAQ = [
     [/\b(kaun|who are|who r u|who is|intro|naam|name)\b/i,
-     'Main Evorez — solo builder, raat 2 baje bhi ship karta hoon. Ye page hi mera status hai: alive, building.'],
-    [/\b(kya bana|kya banaya|what is this|whats this|this site|ye site|project|kaam|building|bana raha|banaya hai)\b/i,
-     'Ye site khud project hai — ek hi HTML file, koi framework nahi, fonts aur music sab andar. Version 2 ka kaam chal raha hai.'],
+     'I am Evorez, a solo builder who ships in public. This page is the status update: alive, building.'],
+    [/\b(kya bana|kya banaya|what is this|whats this|this site|ye site|project|work on|building|bana raha|banaya hai)\b/i,
+     'This site is the project: one HTML file, no framework, fonts and music embedded. Version 2 is in the works.'],
     [/\b(music|song|track|legacy|audio|sound|gaana)\b/i,
-     'Legacy chal raha hai, 2:31. Neeche pill me music button: tap = play/pause, long-press = track card.'],
-    [/\b(hire|job|kaam pe|collab|contact|reach|telegram|mail|baat)\b/i,
-     'Kaam ya collab ke liye Telegram: t.me/Evorez. Code: github.com/evorez.'],
+     'Legacy is playing, 2:31 long. Music button in the pill: tap to play or pause, long-press for the track card.'],
+    [/\b(hire|job|collab|contact|reach|telegram|mail|email|talk)\b/i,
+     'For work or collabs, Telegram is fastest: t.me/Evorez. Code lives at github.com/Evorez.'],
     [/\b(theme|dark|light|accent|glass|colour|color)\b/i,
-     'Pill ke pehle button se theme, accent aur glass badalte hain — light par circle reveal hota hai.'],
-    [/\b(stack|tech|code|html|css|framework|banaya|build)\b/i,
-     'Sab hand-written HTML, CSS aur JS. Ek file, koi framework nahi, koi CDN nahi — fonts bhi base64.'],
+     'The first button in the pill switches theme, accent colour and glass. Going light plays a circle reveal.'],
+    [/\b(stack|tech|code|html|css|framework|how did you build)\b/i,
+     'All hand-written HTML, CSS and JS. One file, no framework, no CDN, even the fonts are base64.'],
     [/\b(blog|social|twitter|insta|x\.com)\b/i,
-     'Sirf Telegram aur GitHub active hain — t.me/Evorez, github.com/evorez.'],
-    [/\b(ai|bot|llm|model|tum kaun|aap kaun)\b/i,
-     'Haan, is chat ke peeche ek free model hai — koi paid key nahi. Quota khatam ho to main yahin se jawab deta hoon.'],
-    [/\b(paisa|price|cost|kitna|charge|free)\b/i,
-     'Ye site free hai aur rahegi. Paise wale kaam ke liye Telegram: t.me/Evorez.'],
-    [/\b(uptime|clock|time|samay|footer|2026)\b/i,
-     'Footer sach bolta hai: uptime — since I woke up. Clock har second chalta hai, 2026 chase karta hai.'],
-    [/\b(v2|version 2|next|aage|future|plan)\b/i,
-     'Agla: version 2 — wahi single file, par tez aur saaf. Shipping in public, Telegram par update mil jayega.'],
+     'Only Telegram and GitHub: t.me/Evorez and github.com/Evorez.'],
+    [/\b(ai|bot|llm|model|are you real)\b/i,
+     'Yes, a free model sits behind this chat, no paid key. When its quota runs out I answer from local notes.'],
+    [/\b(price|cost|charge|free|money)\b/i,
+     'This site is free and stays free. For paid work, Telegram: t.me/Evorez.'],
+    [/\b(uptime|clock|time|footer|2026)\b/i,
+     'The footer is honest about it: uptime, since I woke up. The clock ticks every second and 2026 is chased.'],
+    [/\b(v2|version 2|next|future|roadmap|plan)\b/i,
+     'Next is version 2: same single file, faster and cleaner. Updates go out on Telegram.'],
     [/\b(hi|hello|hey|yo|namaste|salam)\b/i,
-     'Hey, pucho kuch bhi — main yahin hoon.'],
-    [/\b(thank|shukriya|dhanyavad|thanks|badhiya|mast)\b/i,
-     'Koi baat nahi. Building > talking.']
+     'Hey. Ask me anything, I am right here.'],
+    [/\b(thank|thanks|nice|cool|love it)\b/i,
+     'Appreciate it. Building beats talking.']
   ];
   function intentOf(q){
     for(var i = 0; i < FAQ.length; i++) if(FAQ[i][0].test(q)) return { hit: true, reply: FAQ[i][1] };
     return { hit: false, reply: '' };
   }
   function fallbackLine(){
-    return 'Free model ka quota is IP par khatam hai (ek jawab har 45 second). Thodi der me pucho, ya seedha Telegram: t.me/Evorez.';
+    return 'The free model is out of quota for this IP (one reply every 45 seconds). Try again in a bit, or reach me on Telegram: t.me/Evorez.';
   }
   function localReply(q){
     var h = intentOf(q);
@@ -115,6 +115,8 @@
       a.rel = 'noopener noreferrer';
       a.textContent = url;
       node.appendChild(a);
+      var tail = m[0].slice(url.length);
+      if(tail) node.appendChild(document.createTextNode(tail));
       last = m.index + m[0].length;
     }
     if(last < text.length) node.appendChild(document.createTextNode(text.slice(last)));

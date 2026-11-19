@@ -674,6 +674,74 @@ def main():
     fj = s.find("</style>")
     s = s[:fj] + FOOT_CSS + s[fj:]
 
+    # 5e5. profile header: big avatar, name, handle, GitHub + Telegram
+    hij = s.find('<header class="top">')
+    hie = s.find('</header>', hij)
+    if hij == -1 or hie == -1:
+        raise SystemExit('header not found')
+    hie += len('</header>')
+    av = re.search(r'<img src="data:image/jpeg;base64,[^"]+"[^>]*>', s[hij:hie])
+    if not av:
+        raise SystemExit('avatar img not found')
+    avatar_img = av.group(0)
+    WING = ('<svg class="wing" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 3.4c-6.5.2-11.2 3.5-13.8 9'
+            '-1 2.1-1.5 4.1-1.6 5.7-.1.8.9 1.3 1.5.7 1.5-1.6 3-3 4.7-4.2 2.9-2.1 5.5-3.6 7.3-4.6.7-.4 1.4.5.8 1'
+            '-1.4 1.2-3.3 2.6-5.1 3.9 3.9-.6 6.6-2.6 7.9-6.1.6-1.7.9-3.4.9-4.6 0-.5-.3-.8-.7-.8Z" fill="currentColor"/></svg>')
+    GH_ICON = ('<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>')
+    TG_ICON = ('<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.3 18.6 20.1c-.25 1.12-.92 1.4-1.86.87l-5.14-3.79-2.48 2.4c-.28.28-.51.51-1.04.51l.37-5.27 9.57-8.65c.42-.37-.09-.58-.64-.21L5.5 13.1.42 11.5c-1.1-.34-1.13-1.1.23-1.63L20.5 2.3c.92-.34 1.72.21 1.44 2z"/></svg>')
+    PROFILE = ('<header class="top">\n'
+               '    <div class="profile">\n'
+               '      <span class="avatar avatar--lg">' + avatar_img + '</span>\n'
+               '      <div class="profile__id">\n'
+               '        <span class="profile__name">Evorez' + WING + '</span>\n'
+               '        <span class="profile__sub">sheikhfaheem812@gmail.com</span>\n'
+               '      </div>\n'
+               '    </div>\n'
+               '    <div class="profile__acts">\n'
+               '      <a class="pact" href="https://github.com/Evorez" target="_blank" rel="noopener noreferrer">' + GH_ICON + '<span>GitHub</span></a>\n'
+               '      <a class="pact" href="https://t.me/Evorez" target="_blank" rel="noopener noreferrer">' + TG_ICON + '<span>Telegram</span></a>\n'
+               '    </div>\n'
+               '  </header>')
+    s = s[:hij] + PROFILE + s[hie:]
+
+    PROFILE_CSS = """
+/* ---------- profile header ---------- */
+.top{flex-direction:column;align-items:stretch;gap:16px}
+.profile{display:flex;align-items:center;gap:16px;min-width:0}
+.avatar--lg{width:88px;height:88px;padding:3px}
+.avatar--lg::after{width:14px;height:14px;right:3px;bottom:3px;border-width:3px}
+.profile__id{min-width:0}
+.profile__name{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-weight:600;font-style:italic;
+  font-size:clamp(26px,5.2vw,38px);line-height:1.05;letter-spacing:.02em;color:#f2fff8;
+  text-shadow:0 0 22px rgba(var(--green-rgb),.5),0 0 44px rgba(var(--green-rgb),.22)}
+.profile__name .wing{width:22px;height:22px}
+.profile__sub{display:block;margin-top:7px;font-size:12.5px;letter-spacing:.02em;color:var(--muted);overflow-wrap:anywhere}
+.profile__acts{display:flex;gap:10px}
+.pact{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:9px;height:52px;border-radius:999px;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
+  color:rgba(232,252,240,.9);border:1px solid rgba(150,255,200,.2);
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 16px 44px -30px rgba(var(--green-rgb),.95);
+  transition:transform .22s cubic-bezier(.22,.68,.2,1),background .2s,border-color .2s,color .2s,box-shadow .2s}
+.pact svg{width:17px;height:17px;flex:none}
+.pact:hover{transform:translateY(-2px);color:#eafff2;border-color:rgba(var(--green-rgb),.5);
+  background:linear-gradient(180deg,rgba(var(--green-rgb),.16),rgba(var(--green-rgb),.05));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 18px 44px -26px rgba(var(--green-rgb),1)}
+.pact:active{transform:scale(.985)}
+html[data-theme="light"] .pact{background:rgba(255,255,255,.72);border-color:rgba(10,21,16,.12);color:rgba(16,38,26,.82)}
+html[data-theme="light"] .profile__name{color:#0f2a1c;text-shadow:0 0 20px rgba(var(--green-rgb),.25)}
+html[data-theme="light"] .profile__sub,html[data-theme="light"] .foot{color:#47604f}
+html[data-theme="light"] .avatar--lg{box-shadow:0 0 0 1px rgba(var(--green-rgb),.28),0 0 26px rgba(var(--green-rgb),.2),0 14px 34px -20px rgba(10,21,16,.5)}
+@media (max-width:560px){
+  .profile{gap:13px}
+  .avatar--lg{width:72px;height:72px}
+  .profile__sub{font-size:11.5px}
+  .pact{height:48px;font-size:11.5px;letter-spacing:.1em}
+}
+"""
+    pj = s.find('</style>')
+    s = s[:pj] + PROFILE_CSS + s[pj:]
+
     # 5f. the terminal becomes the chat: drop py-lite + the terminal script, swap the panel
     py_a = s.find('/* ---------- py-lite')
     if py_a == -1:
@@ -705,10 +773,10 @@ def main():
       <span class="term__ps" aria-hidden="true">&gt;</span>
       <input class="term__in" id="chatIn" name="msg" type="text" autocomplete="off" autocapitalize="sentences"
              enterkeyhint="send" maxlength="400" aria-label="Message Evorez"
-             placeholder="kuch bhi pucho — kaun ho, kya bana raha hai, hire karun?" />
+             placeholder="ask me anything — who I am, what I am building, hiring?" />
       <button class="chat__send" id="chatSend" type="submit" aria-label="Send message">&uarr;</button>
     </form>
-    <p class="term__hint"><span>free model</span><span>instant answers</span><span>galat bhi ho sakta hai</span><span>esc close</span></p>
+    <p class="term__hint"><span>free model</span><span>instant answers</span><span>can be wrong</span><span>esc close</span></p>
   </div>
 </div>"""
     s = s[:ts] + CHAT_MARKUP + s[te:]
