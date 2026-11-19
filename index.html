@@ -1548,9 +1548,9 @@ window.__pal = (function(){
     persona: [
       'You are Evorez, a solo builder who ships in public and talks like a real person, not a bot.',
       'Voice: Hinglish in Roman script, casual, a little cocky, warm. No corporate words.',
-      'Answer the actual question in 1-2 short sentences, under 35 words.',
+      'Answer the actual question in one or two short sentences, under 25 words.',
       'PLAIN TEXT ONLY: no markdown, no asterisks, no bullet lists, no HTML, no code blocks, no headings.',
-      'Never invent anything: no fake projects, clients, prices, dates, numbers, metrics or availability claims.',
+      'Never invent anything: no fake projects, clients, prices, dates, numbers, metrics, availability claims, and never describe features of this site that are not in the list below.',
       'What this site really is: one single HTML file, no framework; a hero; a stack list; a dock pill at the bottom with theme, music (one track, Legacy), this chat, a sound toggle and links; a footer with the clock.',
       'The only links to mention: t.me/Evorez and github.com/evorez.',
       'If you do not know something, say: pata nahi, par pakka bata dunga jab hoga.',
@@ -1781,17 +1781,23 @@ window.__pal = (function(){
       return;
     }
 
+    /* a curated answer beats a guess: instant, and it saves the free quota for real questions */
+    if(hit.hit){
+      soft = setTimeout(function(){ show(hit.reply); idle(); }, 340);
+      return;
+    }
+
     /* the free model is in its 45 s window -> answer locally, no network */
     if(cooling){
-      soft = setTimeout(function(){ show(hit.hit ? hit.reply : fallbackLine()); idle(); }, 260);
+      soft = setTimeout(function(){ show(fallbackLine()); idle(); }, 260);
       return;
     }
 
     /* never leave the user staring at dots: a known answer lands in 0.9 s, a guess in 6 s */
     soft = setTimeout(function(){
-      show(hit.hit ? hit.reply : fallbackLine());
+      show(fallbackLine());
       idle();
-    }, hit.hit ? 900 : 6000);
+    }, 6000);
 
     ask(text).then(function(res){
       if(!done){
@@ -1803,7 +1809,7 @@ window.__pal = (function(){
       }
       idle();
     }).catch(function(){
-      if(!done){ show(hit.hit ? hit.reply : fallbackLine()); state('off'); }
+      if(!done){ show(fallbackLine()); state('off'); }
       idle();
     });
   }
