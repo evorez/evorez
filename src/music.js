@@ -7,10 +7,9 @@
 
   /* your own files, embedded as data: URIs so the page stays a single file */
   var DATA = {
-    legacy: { name: 'Legacy', len: '2:31', b64: '__LEGACY_B64__' },
-    urban:  { name: 'Urban',  len: '0:38', b64: '__URBAN_B64__'  }
+    legacy: { name: 'Legacy', len: '2:31', b64: '__LEGACY_B64__' }
   };
-  var ORDER = ['legacy', 'urban'];
+  var ORDER = ['legacy'];
   var MKEY = 'evorez_music', TKEY = 'evorez_track';
 
   var ctx = null, master = null, src = null, buf = {}, on = false, tok = 0;

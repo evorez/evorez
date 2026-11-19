@@ -118,7 +118,7 @@ ROMAN_NEW = ('<p class="rome">All Eyes On You'
 
 DOCK_CSS = r'''
 /* ---------- floating iOS dock: every nav icon lives in one pill ---------- */
-.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;
+.dock{position:fixed;left:50%;bottom:calc(21px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;
   padding:7px;border-radius:999px;display:flex;align-items:center;
   background:rgba(10,18,14,.44);border:1px solid rgba(150,255,200,.16);
   backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
@@ -132,7 +132,7 @@ DOCK_CSS = r'''
 .dock .tgl{height:40px;padding:0 12px 0 13px;gap:8px}
 .dock .lnk:hover,.dock .iconbtn:hover,.dock .termbtn:hover,.dock .tgl:hover{background:rgba(255,255,255,.13);color:#eafff2;transform:translateY(-2px)}
 .dock .iconbtn:active,.dock .lnk:active,.dock .termbtn:active,.dock .tgl:active{transform:scale(.94)}
-.dock .pop{position:fixed;top:auto;bottom:calc(92px + env(safe-area-inset-bottom,0px));left:50%;right:auto;
+.dock .pop{position:fixed;top:auto;bottom:calc(99px + env(safe-area-inset-bottom,0px));left:50%;right:auto;
   z-index:90;animation:none;
   /* dynamic-island morph: the card is pulled out of the pill, then settles */
   transform-origin:50% calc(100% + 54px);
@@ -145,25 +145,17 @@ DOCK_CSS = r'''
   .dock .pop{transition:opacity .15s linear;transform:translateX(-50%);border-radius:18px;filter:none}
   .dock .pop.is-open{transform:translateX(-50%)}
 }
-  padding:12px;border-radius:18px;z-index:80;
-  background:linear-gradient(165deg,rgba(24,42,32,.92),rgba(8,16,12,.94));
-  border:1px solid rgba(150,255,200,.22);
-  backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
-  box-shadow:0 30px 70px -30px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.12)}
-  border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer;text-align:left;
-  color:rgba(226,244,232,.82);transition:background .15s,border-color .15s}
 .shell{padding-bottom:118px}
 html[data-theme="light"] .dock{background:rgba(255,255,255,.6);border-color:rgba(10,21,16,.1);
   box-shadow:0 22px 60px -30px rgba(10,21,16,.5),inset 0 1px 0 #fff}
 html[data-theme="light"] .dock .lnk,html[data-theme="light"] .dock .iconbtn,html[data-theme="light"] .dock .termbtn,html[data-theme="light"] .dock .tgl{
   background:rgba(255,255,255,.72);border-color:rgba(10,21,16,.1);color:rgba(16,38,26,.8)}
-  border-color:rgba(10,21,16,.1)}
 @media (max-width:560px){
-  .dock{padding:6px;bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  .dock{padding:6px;bottom:calc(17px + env(safe-area-inset-bottom,0px))}
   .dock .links{gap:4px}
   .dock .iconbtn,.dock .lnk,.dock .termbtn{width:37px;height:37px}
   .dock .tgl{height:37px;padding:0 10px}
-  .dock .pop{bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+  .dock .pop{bottom:calc(87px + env(safe-area-inset-bottom,0px))}
   .shell{padding-bottom:104px}
 }
 '''
@@ -289,14 +281,18 @@ MUSIC_MARKUP = '''<button class="iconbtn musbtn" id="musicBtn" type="button" ari
 
 TRACK_CSS = r"""
 /* ---------- island popovers: morph out of the pill + blurred backdrop ---------- */
-.island{position:fixed;top:auto;bottom:calc(92px + env(safe-area-inset-bottom,0px));left:50%;right:auto;z-index:90;animation:none;
-  transform-origin:50% calc(100% + 54px);border-radius:999px;
-  transform:translateX(-50%) translateY(6px) scale(.32,.18);opacity:0;filter:blur(6px);
-  transition:transform .42s cubic-bezier(.18,1.42,.36,1),opacity .22s ease-out,border-radius .42s cubic-bezier(.18,1.42,.36,1),filter .28s ease-out}
-.island.is-open{transform:translateX(-50%) translateY(0) scale(1);opacity:1;filter:blur(0);border-radius:18px}
-@media (max-width:560px){.island{bottom:calc(80px + env(safe-area-inset-bottom,0px))}}
+/* the card keeps ONE shape: same radius, uniform scale, monotonic easing —
+   it rises out of the pill and settles, nothing goes square and nothing wobbles */
+.island{position:fixed;top:auto;bottom:calc(99px + env(safe-area-inset-bottom,0px));left:50%;right:auto;z-index:90;
+  animation:none;border-radius:18px;transform-origin:50% calc(100% + 61px);
+  transform:translateX(-50%) translateY(10px) scale(.94);
+  opacity:0;filter:blur(3px);
+  will-change:transform,opacity;
+  transition:transform .32s cubic-bezier(.22,.68,.2,1),opacity .16s ease-out,filter .2s ease-out}
+.island.is-open{transform:translateX(-50%) translateY(0) scale(1);opacity:1;filter:blur(0)}
+@media (max-width:560px){.island{bottom:calc(87px + env(safe-area-inset-bottom,0px))}}
 @media (prefers-reduced-motion:reduce){
-  .island{transition:opacity .15s linear;transform:translateX(-50%);border-radius:18px;filter:none}
+  .island{transition:opacity .15s linear;transform:translateX(-50%);filter:none}
   .island.is-open{transform:translateX(-50%)}
 }
 .scrim{position:fixed;inset:0;z-index:69;background:rgba(4,10,7,.4);opacity:0;
@@ -305,6 +301,14 @@ TRACK_CSS = r"""
 .scrim.is-open{opacity:1;pointer-events:auto}
 html[data-theme="light"] .scrim{background:rgba(244,252,247,.42)}
 html[data-blur="deep"] .scrim{-webkit-backdrop-filter:blur(20px) saturate(140%);backdrop-filter:blur(20px) saturate(140%)}
+/* ---------- motion: one easing curve, compositor friendly ---------- */
+:root{--e-out:cubic-bezier(.22,.68,.2,1);--e-inout:cubic-bezier(.4,0,.2,1)}
+.dock,.dock .iconbtn,.dock .lnk,.dock .termbtn,.dock .tgl,.island,.scrim,.titem{backface-visibility:hidden}
+.dock .iconbtn,.dock .lnk,.dock .termbtn,.dock .tgl{
+  transition:background .18s ease,color .18s ease,transform .22s var(--e-out),box-shadow .22s ease}
+.titem{transition:background .18s ease,border-color .18s ease,transform .22s var(--e-out)}
+.titem:active{transform:scale(.985)}
+.tpop__eq i,.musbtn__eq i{will-change:transform}
 /* ---------- soundtrack menu ---------- */
 .tpop{width:min(272px,calc(100vw - 24px));padding:10px}
 .tpop__h{margin:4px 8px 8px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(var(--gb-rgb),.6)}
@@ -343,11 +347,7 @@ TRACK_MARKUP = """<div class="scrim" id="scrim" hidden></div>
     <p class="tpop__h">soundtrack</p>
     <button class="titem is-on" type="button" data-track="legacy" aria-pressed="true">
       <span class="tpop__eq" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="titem__w"><span class="titem__n">Legacy</span><span class="titem__m">2:31 &middot; default</span></span>
-    </button>
-    <button class="titem" type="button" data-track="urban" aria-pressed="false">
-      <span class="tpop__eq" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="titem__w"><span class="titem__n">Urban</span><span class="titem__m">0:38 &middot; loop</span></span>
+      <span class="titem__w"><span class="titem__n">Legacy</span><span class="titem__m">2:31 &middot; your track</span></span>
     </button>
     <p class="tpop__f">long-press the pill &middot; tap to play</p>
   </div>
@@ -356,7 +356,7 @@ TRACK_MARKUP = """<div class="scrim" id="scrim" hidden></div>
 
 with open('src/music.js', encoding='utf-8') as fh:
     MUSIC_JS = fh.read()
-for _k, _f in (('__LEGACY_B64__', 'src/legacy.mp3'), ('__URBAN_B64__', 'src/urban.mp3')):
+for _k, _f in (('__LEGACY_B64__', 'src/legacy.mp3'),):
     MUSIC_JS = MUSIC_JS.replace(_k, base64.b64encode(open(_f, 'rb').read()).decode('ascii'))
 if '__LEGACY_B64__' in MUSIC_JS or '__URBAN_B64__' in MUSIC_JS:
     raise SystemExit('audio placeholders not substituted')
@@ -608,6 +608,50 @@ def main():
     ps, pe = div_span(s, 'appearPop')
     pop_html = s[ps:pe]
     s = s[:ps] + s[pe:]
+
+
+    # 5e. the rain runs at the display's own refresh rate instead of a 15 fps throttle
+    rain_old_head = "  var last = 0, running = true;"
+    if rain_old_head not in s:
+        raise SystemExit('rain header not found')
+    s = s.replace(rain_old_head, "  var last = 0, running = true, prevT = 0;", 1)
+
+    rain_old = """    if (t - last < 66) return;      /* ~15fps: cheap + cinematic */
+    last = t;
+
+    ctx.fillStyle = PAL.fade;
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = fs + 'px JBMonoEmbed, ui-monospace, monospace';
+"""
+    rain_new = """    /* frame-rate independent: runs at the panel's own refresh (120 / 144 Hz panels
+       really do get 120 / 144 fps) while moving and fading at the same speed as before */
+    if (!prevT) prevT = t;
+    var dt = t - prevT;
+    if (dt < 3.4) return;                 /* ceiling ~290 fps, no runaway on odd panels */
+    prevT = t;
+    var step = dt / 66;                   /* 1.0 == one old frame's worth of motion */
+    if (step > 4) step = 4;               /* after a stall, never leap */
+
+    ctx.fillStyle = 'rgba(5,6,7,' + (1 - Math.pow(0.84, step)).toFixed(3) + ')';
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = fs + 'px JBMonoEmbed, ui-monospace, monospace';
+"""
+    if rain_old not in s:
+        raise SystemExit('rain throttle block not found')
+    s = s.replace(rain_old, rain_new, 1)
+
+    rain_tail_old = """      if (Math.random() > 0.988){"""
+    if rain_tail_old not in s:
+        raise SystemExit('rain head-char branch not found')
+    s = s.replace(rain_tail_old, """      if (Math.random() < 0.012 * step){""", 1)
+
+    rain_drop_old = """      if (y > h && Math.random() > 0.972) drops[i] = 0;
+      drops[i] += 1;"""
+    if rain_drop_old not in s:
+        raise SystemExit('rain drop advance not found')
+    s = s.replace(rain_drop_old, """      if (y > h && Math.random() < 0.028 * step) drops[i] = 0;
+      drops[i] += step;""", 1)
+    log.append('%-28s %d fps -> display' % ('rain:', 15))
 
     # 6. scripts at the end of the body: appearance first, then the arcade loader
     s = s.replace('</body>', TRACK_MARKUP + pop_html + '\n' + appearance_js + MUSIC_JS + ARCADE_JS + '</body>')
