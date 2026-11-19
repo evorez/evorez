@@ -817,7 +817,9 @@ html[data-theme="light"] .pact{background:rgba(255,255,255,.5);border-color:rgba
 /* the rain sits under every layer; the hero card must stay flat or Chromium drops
    its backdrop blur and the columns show through the glass as sharp glyphs */
 #rain{z-index:-1;opacity:.62}
-html[data-theme="light"] #rain{opacity:.34}
+html[data-theme="light"] #rain{opacity:.28}
+/* DEEP glass in light mode was so thin the columns read through the copy */
+html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(248,251,248,.8))}
 .card{transform-style:flat;background:linear-gradient(180deg,rgba(8,14,11,.9),rgba(5,8,7,.93))}
 """
     pj = s.rfind('</style>')
