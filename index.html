@@ -639,6 +639,53 @@ html[data-theme="light"] .rome{color:#0b1a12;text-shadow:0 0 26px rgba(var(--gre
 @keyframes romeDot{0%,75%,100%{opacity:.2}35%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.rome__dots i{animation:none;opacity:.65}}
 @media (max-width:560px){.rome{letter-spacing:.12em}}
+/* ---------- chat: bubbles, typing dots, starter chips ---------- */
+.chat__log{display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:12.5px;line-height:1.62;
+  white-space:pre-wrap;overflow-wrap:anywhere;
+  animation:msgIn .2s cubic-bezier(.22,.68,.2,1)}
+.msg--bot{align-self:flex-start;border-bottom-left-radius:5px;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:#dcf6e7}
+.msg--me{align-self:flex-end;border-bottom-right-radius:5px;
+  background:rgba(var(--green-rgb),.16);border:1px solid rgba(var(--green-rgb),.34);color:#eafff3}
+.msg--note{align-self:center;max-width:100%;background:transparent;border:0;padding:2px 0;
+  font-size:10.5px;letter-spacing:.06em;color:rgba(200,230,212,.52)}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chat__typing{display:inline-flex;gap:4px;align-items:center;height:1em}
+.chat__typing i{display:block;width:5px;height:5px;border-radius:50%;background:currentColor;
+  opacity:.45;animation:typeDot 1.05s ease-in-out infinite}
+.chat__typing i:nth-child(2){animation-delay:.14s}
+.chat__typing i:nth-child(3){animation-delay:.28s}
+@keyframes typeDot{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-3px);opacity:.9}}
+.chat__starters{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px;flex:none}
+.chat__starters:empty{display:none}
+.chat__chip{font:inherit;font-size:11px;letter-spacing:.02em;cursor:pointer;
+  padding:6px 11px;border-radius:999px;color:rgba(226,244,232,.82);
+  border:1px solid rgba(150,255,200,.24);background:rgba(255,255,255,.04);
+  transition:background .18s ease,border-color .18s ease,transform .22s cubic-bezier(.22,.68,.2,1)}
+.chat__chip:hover{background:rgba(var(--green-rgb),.14);border-color:rgba(var(--green-rgb),.45);transform:translateY(-1px)}
+.chat__chip:active{transform:scale(.97)}
+.chat__send{width:32px;height:32px;flex:none;display:grid;place-items:center;cursor:pointer;
+  border-radius:999px;font-size:15px;line-height:1;color:#eafff2;
+  border:1px solid rgba(var(--green-rgb),.42);background:rgba(var(--green-rgb),.18);
+  transition:background .18s ease,transform .22s cubic-bezier(.22,.68,.2,1),opacity .18s ease}
+.chat__send:hover{background:rgba(var(--green-rgb),.3);transform:translateY(-1px)}
+.chat__send:active{transform:scale(.94)}
+.chat__send[disabled]{opacity:.45;cursor:default;transform:none}
+.chat__live{display:inline-flex;align-items:center;gap:5px;margin-left:auto;
+  font-size:9.5px;letter-spacing:.14em;color:rgba(var(--gb-rgb),.85)}
+.chat__live i{width:5px;height:5px;border-radius:50%;background:var(--green-bright);
+  box-shadow:0 0 8px rgba(var(--green-rgb),.9)}
+.chat__live[data-state="wait"] i{background:#f0c14b;box-shadow:0 0 8px rgba(240,193,75,.9)}
+.chat__live[data-state="off"] i{background:#e5455a;box-shadow:0 0 8px rgba(229,69,90,.9)}
+html[data-theme="light"] .msg--bot{background:rgba(10,21,16,.055);border-color:rgba(10,21,16,.1);color:#10261a}
+html[data-theme="light"] .msg--me{background:rgba(10,120,70,.13);border-color:rgba(10,120,70,.3);color:#08281a}
+html[data-theme="light"] .msg--note{color:rgba(16,38,26,.5)}
+html[data-theme="light"] .chat__chip{color:rgba(16,38,26,.8);border-color:rgba(10,120,70,.28);background:rgba(255,255,255,.6)}
+@media (prefers-reduced-motion:reduce){
+  .msg{animation:none}
+  .chat__typing i{animation:none;opacity:.6}
+}
 </style>
 <script>(function(){try{var a=JSON.parse(localStorage.getItem('evorez_appearance')||'{}');var r=document.documentElement;
 var t=a.theme==='light'?'light':'dark';var c=['green','crimson','gold'].indexOf(a.accent)>-1?a.accent:'green';
@@ -673,9 +720,9 @@ r.setAttribute('data-theme',t);r.setAttribute('data-accent',c);r.setAttribute('d
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18V6.8l9-1.8v10.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.6" cy="18" r="2.5" stroke="currentColor" stroke-width="1.7"/><circle cx="15.6" cy="15.5" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg>
           <span class="musbtn__eq" aria-hidden="true"><i></i><i></i><i></i></span>
         </button>
-        <button class="termbtn" id="termBtn" type="button" aria-haspopup="dialog" aria-controls="termLayer" aria-label="Open the terminal">
+        <button class="termbtn" id="termBtn" type="button" aria-haspopup="dialog" aria-controls="termLayer" aria-label="Chat with Evorez">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M6.5 9.5 9 12l-2.5 2.5M11.5 15H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>TERMINAL</span>
+        <span>CHAT</span>
       </button>
       <button class="tgl" id="testToggle" type="button" aria-pressed="false" aria-controls="gameLayer" aria-label="Open the arcade">
         <span class="tgl__txt">ARCADE</span>
@@ -732,21 +779,23 @@ r.setAttribute('data-theme',t);r.setAttribute('data-accent',c);r.setAttribute('d
 </div>
 
 <div class="term" id="termLayer" hidden>
-  <div class="term__box" role="dialog" aria-modal="true" aria-label="Evorez terminal">
+  <div class="term__box" role="dialog" aria-modal="true" aria-labelledby="chatName">
     <div class="term__bar">
       <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span>evorez@matrix : <b>~</b></span>
-      <span class="term__badge" id="termBadge"><i></i>py-lite</span>
-      <button class="term__x" id="termClose" type="button" aria-label="Close terminal">✕</button>
+      <span id="chatName"><b>Evorez</b> &middot; ask me anything</span>
+      <span class="chat__live" id="chatLive" data-state="online"><i></i>online</span>
+      <button class="term__x" id="chatClose" type="button" aria-label="Close chat">&times;</button>
     </div>
-    <div class="term__body" id="termBody" role="log" aria-live="polite" aria-label="Terminal output"></div>
-    <form class="term__prompt" id="termForm" autocomplete="off">
-      <span class="term__ps" id="termPs">$</span>
-      <input class="term__in" id="termIn" name="cmd" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Terminal command" placeholder="help · py · theme gold" />
+    <div class="term__body chat__log" id="chatLog" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation"></div>
+    <div class="chat__starters" id="chatStarters"></div>
+    <form class="term__prompt" id="chatForm" autocomplete="off">
+      <span class="term__ps" aria-hidden="true">&gt;</span>
+      <input class="term__in" id="chatIn" name="msg" type="text" autocomplete="off" autocapitalize="sentences"
+             enterkeyhint="send" maxlength="400" aria-label="Message Evorez"
+             placeholder="kuch bhi pucho — kaun ho, kya bana raha hai, hire karun?" />
+      <button class="chat__send" id="chatSend" type="submit" aria-label="Send message">&uarr;</button>
     </form>
-    <div class="term__hint">
-      <span><b>help</b> commands</span><span><b>py</b> python repl</span><span><b>theme</b> matrix / crimson / gold</span><span><b>↑↓</b> history</span><span><b>esc</b> close</span>
-    </div>
+    <p class="term__hint"><span>free model</span><span>ek reply / 45s</span><span>galat bhi ho sakta hai</span><span>esc close</span></p>
   </div>
 </div>
 
@@ -927,749 +976,7 @@ window.__pal = (function(){
   requestAnimationFrame(frame);
 })();
 </script>
-<script>
-/* ---------- py-lite: small python 3 subset (offline fallback) ---------- */
-var PY = (function(){
-  var KEYWORDS = {if:1,else:1,elif:1,for:1,while:1,in:1,not:1,and:1,or:1,True:1,False:1,None:1,pass:1,break:1,continue:1,def:1,return:1};
 
-  function pyErr(type, msg){ var e = new Error(msg); e.pyType = type; throw e; }
-
-  function tokenize(src){
-    var toks = [], i = 0, n = src.length;
-    while(i < n){
-      var c = src[i];
-      if(c === ' ' || c === '\t' || c === '\n' || c === '\r'){ i++; continue; }
-      if(c === '#'){ while(i < n && src[i] !== '\n') i++; continue; }
-      var isF = (c === 'f' || c === 'F') && (src[i+1] === '"' || src[i+1] === "'");
-      if(c === '"' || c === "'" || isF){
-        if(isF) i++;
-        var q = src[i++], buf = '';
-        while(i < n && src[i] !== q){
-          if(src[i] === '\\'){
-            var nx = src[i+1];
-            buf += nx === 'n' ? '\n' : nx === 't' ? '\t' : nx === '\\' ? '\\' : nx === q ? q : '\\' + nx;
-            i += 2;
-          } else { buf += src[i++]; }
-        }
-        i++;
-        toks.push({t: isF ? 'fstr' : 'str', v: buf});
-        continue;
-      }
-      if(/[0-9]/.test(c) || (c === '.' && /[0-9]/.test(src[i+1] || ''))){
-        var num = '';
-        while(i < n && /[0-9._]/.test(src[i])){ if(src[i] !== '_') num += src[i]; i++; }
-        toks.push({t:'num', v: parseFloat(num)});
-        continue;
-      }
-      if(/[A-Za-z_]/.test(c)){
-        var name = '';
-        while(i < n && /[A-Za-z0-9_]/.test(src[i])) name += src[i++];
-        toks.push({t:'name', v: name});
-        continue;
-      }
-      var three = src.substr(i, 2);
-      if(three === '**' || three === '//' || three === '==' || three === '!=' || three === '<=' || three === '>='){
-        toks.push({t:'op', v: three}); i += 2; continue;
-      }
-      if('+-*/%<>=()[],:.{};'.indexOf(c) > -1){ toks.push({t:'op', v: c}); i++; continue; }
-      pyErr('SyntaxError', 'invalid character ' + JSON.stringify(c));
-    }
-    toks.push({t:'eof', v:''});
-    return toks;
-  }
-
-  function parse(src){
-    var toks = tokenize(src), p = 0;
-    function peek(){ return toks[p]; }
-    function next(){ return toks[p++]; }
-    function isOp(v){ var t = peek(); return t.t === 'op' && t.v === v; }
-    function isName(v){ var t = peek(); return t.t === 'name' && t.v === v; }
-    function eatOp(v){ if(!isOp(v)) pyErr('SyntaxError', "expected '" + v + "'"); return next(); }
-    function eatName(v){ if(!isName(v)) pyErr('SyntaxError', "expected '" + v + "'"); return next(); }
-    function atEnd(){ return peek().t === 'eof'; }
-
-    function statements(){
-      var list = [];
-      while(!atEnd()){
-        if(isOp(';')){ next(); continue; }
-        list.push(statement());
-        while(isOp(';')) next();
-      }
-      return list;
-    }
-    function suite(){
-      var list = [];
-      while(!atEnd()){
-        if(isName('else') || isName('elif')) break;
-        list.push(statement());
-        if(isOp(';')){ next(); continue; }
-        if(isName('else') || isName('elif')) break;
-        if(atEnd()) break;
-        if(peek().t === 'op' && [')',']','}'].indexOf(peek().v) > -1) break;
-        continue;
-      }
-      return list;
-    }
-    function statement(){
-      if(isName('if')){
-        next(); var c = expr(); eatOp(':'); var body = suite();
-        return {t:'if', c: c, body: body, alt: altTail()};
-      }
-      if(isName('for')){ next(); var v = eatNameWord(); eatName('in'); var it = expr(); eatOp(':'); return {t:'for', v: v, it: it, body: suite()}; }
-      if(isName('while')){ next(); var c2 = expr(); eatOp(':'); return {t:'while', c: c2, body: suite()}; }
-      if(isName('pass')){ next(); return {t:'pass'}; }
-      if(isName('break')){ next(); return {t:'break'}; }
-      if(isName('continue')){ next(); return {t:'continue'}; }
-      if(isName('def')){ pyErr('SyntaxError', 'def is not supported in py-lite'); }
-      var t0 = peek(), t1 = toks[p+1];
-      if(t0.t === 'name' && t1 && t1.t === 'op' && t1.v === '='){
-        next(); next(); return {t:'assign', name: t0.v, e: expr()};
-      }
-      return {t:'expr', e: expr()};
-    }
-    function altTail(){
-      if(isName('elif')){
-        next(); var c = expr(); eatOp(':'); var b = suite();
-        return [{t:'if', c: c, body: b, alt: altTail()}];
-      }
-      if(isName('else')){ next(); eatOp(':'); return suite(); }
-      return [];
-    }
-
-    function eatNameWord(){ var t = next(); if(t.t !== 'name') pyErr('SyntaxError','expected a name'); return t.v; }
-
-    function expr(){ return orExpr(); }
-    function orExpr(){ var l = andExpr(); while(isName('or')){ next(); l = {t:'bin', op:'or', l:l, r:andExpr()}; } return l; }
-    function andExpr(){ var l = notExpr(); while(isName('and')){ next(); l = {t:'bin', op:'and', l:l, r:notExpr()}; } return l; }
-    function notExpr(){ if(isName('not')){ next(); return {t:'unary', op:'not', e: notExpr()}; } return cmpExpr(); }
-    function cmpExpr(){
-      var l = addExpr();
-      while(true){
-        var t = peek();
-        if(t.t === 'op' && ['==','!=','<','>','<=','>='].indexOf(t.v) > -1){ next(); l = {t:'bin', op:t.v, l:l, r:addExpr()}; }
-        else if(t.t === 'name' && t.v === 'in'){ next(); l = {t:'bin', op:'in', l:l, r:addExpr()}; }
-        else break;
-      }
-      return l;
-    }
-    function addExpr(){ var l = mulExpr(); while(isOp('+') || isOp('-')){ var op = next().v; l = {t:'bin', op:op, l:l, r:mulExpr()}; } return l; }
-    function mulExpr(){ var l = unary(); while(isOp('*') || isOp('/') || isOp('//') || isOp('%')){ var op = next().v; l = {t:'bin', op:op, l:l, r:unary()}; } return l; }
-    function unary(){ if(isOp('-')){ next(); return {t:'unary', op:'-', e: unary()}; } if(isOp('+')){ next(); return unary(); } return powExpr(); }
-    function powExpr(){ var l = postfix(); if(isOp('**')){ next(); return {t:'bin', op:'**', l:l, r: unary()}; } return l; }
-    function postfix(){
-      var e = atom();
-      while(true){
-        if(isOp('(')){ next(); var args = [];
-          if(!isOp(')')){ args.push(expr()); while(isOp(',')){ next(); if(isOp(')')) break; args.push(expr()); } }
-          eatOp(')'); e = {t:'call', fn: e, args: args};
-        } else if(isOp('[')){ next(); var idx = expr(); eatOp(']'); e = {t:'index', obj: e, idx: idx};
-        } else if(isOp('.')){ next(); var nm = next(); e = {t:'member', obj: e, name: nm.v};
-        } else break;
-      }
-      return e;
-    }
-    function atom(){
-      var t = next();
-      if(t.t === 'num') return {t:'lit', v: t.v};
-      if(t.t === 'str') return {t:'lit', v: t.v};
-      if(t.t === 'fstr') return {t:'fstr', v: t.v};
-      if(t.t === 'name'){
-        if(t.v === 'True') return {t:'lit', v: true};
-        if(t.v === 'False') return {t:'lit', v: false};
-        if(t.v === 'None') return {t:'lit', v: null};
-        return {t:'name', v: t.v};
-      }
-      if(t.t === 'op' && t.v === '('){ var e = expr(); eatOp(')'); return e; }
-      if(t.t === 'op' && t.v === '['){ var items = [];
-        if(!isOp(']')){ items.push(expr()); while(isOp(',')){ next(); if(isOp(']')) break; items.push(expr()); } }
-        eatOp(']'); return {t:'list', items: items};
-      }
-      pyErr('SyntaxError', 'unexpected token ' + JSON.stringify(t.v || t.t));
-    }
-    return statements();
-  }
-
-  function isNum(v){ return typeof v === 'number'; }
-  function pyType(v){
-    if(v === null || v === undefined) return 'NoneType';
-    if(typeof v === 'boolean') return 'bool';
-    if(typeof v === 'number') return Number.isInteger(v) ? 'int' : 'float';
-    if(typeof v === 'string') return 'str';
-    if(Array.isArray(v)) return 'list';
-    return 'object';
-  }
-  function pyStr(v){
-    if(v === null || v === undefined) return 'None';
-    if(v === true) return 'True';
-    if(v === false) return 'False';
-    if(typeof v === 'number') return String(v);
-    if(typeof v === 'string') return v;
-    if(Array.isArray(v)) return '[' + v.map(pyRepr).join(', ') + ']';
-    return String(v);
-  }
-  function pyRepr(v){ return typeof v === 'string' ? "'" + v + "'" : pyStr(v); }
-
-  function truthy(v){
-    if(v === null || v === undefined || v === false) return false;
-    if(v === true) return true;
-    if(typeof v === 'number') return v !== 0;
-    if(typeof v === 'string') return v.length > 0;
-    if(Array.isArray(v)) return v.length > 0;
-    return true;
-  }
-  function negErr(op, a, b){
-    if(typeof a === 'string' && typeof b === 'string' && op !== '+') pyErr('TypeError', "unsupported operand type(s) for " + op + ": 'str' and 'str'");
-    pyErr('TypeError', "unsupported operand type(s) for " + op + ": '" + pyType(a) + "' and '" + pyType(b) + "'");
-  }
-
-  var BREAK = { br:1 }, CONT = { co:1 };
-
-  function Interp(){
-    this.vars = {};
-    this.steps = 0;
-    this.stdout = [];
-    this.builtins = {
-      print: function(){ var args = Array.prototype.slice.call(arguments); return args; },
-      len: function(v){ if(typeof v === 'string' || Array.isArray(v)) return v.length; pyErr('TypeError', "object of type '" + pyType(v) + "' has no len()"); },
-      str: function(v){ return pyStr(v); },
-      repr: function(v){ return pyRepr(v); },
-      int: function(v){ var n = parseInt(v, 10); if(isNaN(n)) pyErr('ValueError', 'invalid literal for int()'); return n; },
-      float: function(v){ var n = parseFloat(v); if(isNaN(n)) pyErr('ValueError', 'could not convert string to float'); return n; },
-      bool: function(v){ return truthy(v); },
-      abs: function(v){ return Math.abs(v); },
-      round: function(v, d){ var m = Math.pow(10, d || 0); return Math.round(v * m) / m; },
-      min: function(){ var a = Array.isArray(arguments[0]) ? arguments[0] : Array.prototype.slice.call(arguments); return a.reduce(function(x,y){ return y < x ? y : x; }); },
-      max: function(){ var a = Array.isArray(arguments[0]) ? arguments[0] : Array.prototype.slice.call(arguments); return a.reduce(function(x,y){ return y > x ? y : x; }); },
-      sum: function(a){ return a.reduce(function(x,y){ return x + y; }, 0); },
-      sorted: function(a){ return a.slice().sort(function(x,y){ return x < y ? -1 : x > y ? 1 : 0; }); },
-      reversed: function(a){ return a.slice().reverse(); },
-      list: function(v){ return Array.isArray(v) ? v.slice() : typeof v === 'string' ? v.split('') : pyErr('TypeError','not iterable'); },
-      range: function(a, b, c){ var start = 0, stop = a, step = 1;
-        if(b !== undefined){ start = a; stop = b; }
-        if(c !== undefined) step = c;
-        if(step === 0) pyErr('ValueError', 'range() arg 3 must not be zero');
-        var out = [];
-        if(step > 0) for(var i = start; i < stop; i += step) out.push(i);
-        else for(var j = start; j > stop; j += step) out.push(j);
-        return out; },
-      type: function(v){ return '<class \'' + pyType(v) + '\'>'; },
-      input: function(q){ return ''; }
-    };
-  }
-
-  Interp.prototype.evalFString = function(tpl){
-    var self = this;
-    return tpl.replace(/\{([^{}]+)\}/g, function(_, inner){
-      var ast = parse(inner.trim());
-      if(ast.length !== 1 || ast[0].t !== 'expr') return '{' + inner + '}';
-      return pyStr(self.eval(ast[0].e));
-    });
-  };
-
-  Interp.prototype.eval = function(n){
-    var self = this;
-    switch(n.t){
-      case 'lit': return n.v;
-      case 'fstr': return this.evalFString(n.v);
-      case 'name':
-        if(Object.prototype.hasOwnProperty.call(this.vars, n.v)) return this.vars[n.v];
-        if(this.builtins[n.v]) return this.builtins[n.v];
-        pyErr('NameError', "name '" + n.v + "' is not defined");
-        break;
-      case 'list': return n.items.map(function(i){ return self.eval(i); });
-      case 'unary':
-        if(n.op === '-'){ var v = this.eval(n.e); if(!isNum(v)) pyErr('TypeError', "bad operand type for unary -: '" + pyType(v) + "'"); return -v; }
-        if(n.op === 'not') return !truthy(this.eval(n.e));
-        break;
-      case 'bin':
-        if(n.op === 'and'){ var L = this.eval(n.l); return truthy(L) ? this.eval(n.r) : L; }
-        if(n.op === 'or'){ var L2 = this.eval(n.l); return truthy(L2) ? L2 : this.eval(n.r); }
-        var a = this.eval(n.l), b = this.eval(n.r);
-        switch(n.op){
-          case '+':
-            if(typeof a === 'string' || typeof b === 'string'){ if(typeof a !== typeof b) negErr('+', a, b); return a + b; }
-            if(Array.isArray(a) && Array.isArray(b)) return a.concat(b);
-            if(isNum(a) && isNum(b)) return a + b;
-            negErr('+', a, b); break;
-          case '-': if(isNum(a) && isNum(b)) return a - b; negErr('-', a, b); break;
-          case '*':
-            if(typeof a === 'string' && isNum(b)) return b > 0 ? a.repeat(b) : '';
-            if(typeof b === 'string' && isNum(a)) return a > 0 ? b.repeat(a) : '';
-            if(isNum(a) && isNum(b)) return a * b;
-            negErr('*', a, b); break;
-          case '/': if(isNum(a) && isNum(b)){ if(b === 0) pyErr('ZeroDivisionError', 'division by zero'); return a / b; } negErr('/', a, b); break;
-          case '//': if(isNum(a) && isNum(b)){ if(b === 0) pyErr('ZeroDivisionError', 'integer division or modulo by zero'); return Math.floor(a / b); } negErr('//', a, b); break;
-          case '%': if(isNum(a) && isNum(b)){ if(b === 0) pyErr('ZeroDivisionError', 'integer division or modulo by zero'); return ((a % b) + b) % b; } negErr('%', a, b); break;
-          case '**': if(isNum(a) && isNum(b)) return Math.pow(a, b); negErr('**', a, b); break;
-          case '==': return pyEq(a, b);
-          case '!=': return !pyEq(a, b);
-          case '<': return a < b;
-          case '>': return a > b;
-          case '<=': return a <= b;
-          case '>=': return a >= b;
-          case 'in':
-            if(typeof b === 'string') return b.indexOf(pyStr(a)) > -1;
-            if(Array.isArray(b)) return b.some(function(x){ return pyEq(x, a); });
-            pyErr('TypeError', "argument of type '" + pyType(b) + "' is not iterable");
-            break;
-        }
-        break;
-      case 'index':
-        var obj = this.eval(n.obj), idx = this.eval(n.idx);
-        if(!isNum(idx)) pyErr('TypeError', 'list indices must be integers');
-        if(typeof obj === 'string'){
-          var k = idx < 0 ? obj.length + idx : idx;
-          if(k < 0 || k >= obj.length) pyErr('IndexError', 'string index out of range');
-          return obj[k];
-        }
-        if(Array.isArray(obj)){
-          var k2 = idx < 0 ? obj.length + idx : idx;
-          if(k2 < 0 || k2 >= obj.length) pyErr('IndexError', 'list index out of range');
-          return obj[k2];
-        }
-        pyErr('TypeError', "'" + pyType(obj) + "' object is not subscriptable");
-        break;
-      case 'member':
-        return { __member: n.name, __obj: this.eval(n.obj) };
-      case 'call':
-        var fnNode = n.fn, fn;
-        if(fnNode.t === 'member'){
-          var recv = this.eval(fnNode.obj);
-          var mname = fnNode.name;
-          var args = n.args.map(function(x){ return self.eval(x); });
-          return this.method(recv, mname, args);
-        }
-        fn = this.eval(fnNode);
-        var argv = n.args.map(function(x){ return self.eval(x); });
-        if(typeof fn !== 'function') pyErr('TypeError', "'" + pyType(fn) + "' object is not callable");
-        return fn.apply(null, argv);
-    }
-    pyErr('SyntaxError', 'cannot evaluate expression');
-  };
-
-  Interp.prototype.method = function(recv, name, args){
-    if(typeof recv === 'string'){
-      switch(name){
-        case 'upper': return recv.toUpperCase();
-        case 'lower': return recv.toLowerCase();
-        case 'title': return recv.replace(/\w\S*/g, function(t){ return t[0].toUpperCase() + t.slice(1).toLowerCase(); });
-        case 'strip': return recv.trim();
-        case 'split': return args.length ? recv.split(args[0]) : recv.trim().split(/\s+/);
-        case 'replace': return recv.split(args[0]).join(args[1]);
-        case 'startswith': return recv.indexOf(args[0]) === 0;
-        case 'endswith': return recv.slice(-String(args[0]).length) === args[0];
-        case 'join': return (Array.isArray(args[0]) ? args[0] : []).map(pyStr).join(recv);
-        case 'count': return recv.split(args[0]).length - 1;
-        case 'find': return recv.indexOf(args[0]);
-      }
-    }
-    if(Array.isArray(recv)){
-      switch(name){
-        case 'append': recv.push(args[0]); return null;
-        case 'pop': return recv.length ? recv.pop() : pyErr('IndexError', 'pop from empty list');
-        case 'reverse': recv.reverse(); return null;
-        case 'sort': recv.sort(function(x,y){ return x < y ? -1 : x > y ? 1 : 0; }); return null;
-        case 'count': return recv.filter(function(x){ return pyEq(x, args[0]); }).length;
-        case 'index': return recv.findIndex(function(x){ return pyEq(x, args[0]); });
-        case 'join': return recv.map(pyStr).join('');
-      }
-    }
-    pyErr('AttributeError', "'" + pyType(recv) + "' object has no attribute '" + name + "'");
-  };
-
-  function pyEq(a, b){
-    if(Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every(function(x, i){ return pyEq(x, b[i]); });
-    return a === b;
-  }
-
-  Interp.prototype.exec = function(list, top){
-    for(var i = 0; i < list.length; i++){
-      var r = this.stmt(list[i], top);
-      if(r === BREAK) return BREAK;
-      if(r === CONT) return CONT;
-    }
-  };
-
-  Interp.prototype.stmt = function(n, top){
-    var self = this;
-    if(++this.steps > 200000) pyErr('RuntimeError', 'loop guard: 200k steps');
-    switch(n.t){
-      case 'pass': return;
-      case 'break': return BREAK;
-      case 'continue': return CONT;
-      case 'assign': this.vars[n.name] = this.eval(n.e); return;
-      case 'if':
-        if(truthy(this.eval(n.c))) return this.exec(n.body, false);
-        if(n.alt && n.alt.length) return this.exec(n.alt, false);
-        return;
-      case 'for':
-        var items = this.eval(n.it);
-        if(!Array.isArray(items)) pyErr('TypeError', "'" + pyType(items) + "' object is not iterable");
-        for(var i = 0; i < items.length; i++){
-          this.vars[n.v] = items[i];
-          var r = this.exec(n.body, false);
-          if(r === BREAK) break;
-        }
-        return;
-      case 'while':
-        var guard = 0;
-        while(truthy(this.eval(n.c))){
-          if(++guard > 100000) pyErr('RuntimeError', 'while loop guard: 100k iterations');
-          var r2 = this.exec(n.body, false);
-          if(r2 === BREAK) break;
-        }
-        return;
-      case 'expr':
-        var v = this.eval(n.e);
-        if(top !== false && v !== null && v !== undefined) this.echo.push(pyRepr(v));
-        return;
-    }
-  };
-
-  var GLOB = null;
-  function reset(){ GLOB = null; }
-  function run(src, opts){
-    if(!GLOB){ GLOB = new Interp(); GLOB.echo = []; }
-    var interp = GLOB, lines = [];
-    interp.echo = [];
-    interp.steps = 0;
-    var ast;
-    try { ast = parse(src); } catch(e){
-      if(e.pyType) return { out: [], err: e.pyType + ': ' + e.message };
-      return { out: [], err: 'SyntaxError: ' + e.message };
-    }
-    interp.builtins.print = function(){
-      var args = Array.prototype.slice.call(arguments);
-      lines.push(args.map(pyStr).join(' '));
-      return null;
-    };
-    try {
-      interp.exec(ast, true);
-    } catch(e){
-      if(e.pyType) return { out: lines.concat(interp.echo), err: e.pyType + ': ' + e.message };
-      return { out: lines.concat(interp.echo), err: (e && e.message) || 'error' };
-    }
-    return { out: lines.concat(interp.echo), err: null, vars: interp.vars };
-  }
-
-  return { run: run, pyStr: pyStr, parse: parse, reset: reset };
-})();
-
-</script>
-<script>
-/* ============ terminal (shell + python repl) ============ */
-(function(){
-  var P = window.__pal;
-  var btn = document.getElementById('termBtn');
-  var layer = document.getElementById('termLayer');
-  var closeBtn = document.getElementById('termClose');
-  var body = document.getElementById('termBody');
-  var form = document.getElementById('termForm');
-  var input = document.getElementById('termIn');
-  var psEl = document.getElementById('termPs');
-  var badge = document.getElementById('termBadge');
-  if(!btn || !layer || !body || !form || !input) return;
-
-  var mode = 'sh';
-  var history = [];
-  var hIdx = -1;
-  var pending = [];          /* multi-line python block */
-  var booted = false;
-  var pyReady = false;
-  var pyodideLoading = false;
-
-  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function scrollDown(){ body.scrollTop = body.scrollHeight; }
-  function line(html, cls){
-    var d = document.createElement('div');
-    d.className = 'ln' + (cls ? ' ' + cls : '');
-    d.innerHTML = html;
-    body.appendChild(d);
-    if(body.children.length > 400) body.removeChild(body.firstChild);
-    scrollDown();
-    return d;
-  }
-  function out(t){ line(esc(t), 'out'); }
-  function dim(t){ line(esc(t), 'dim'); }
-  function warn(t){ line(esc(t), 'warn'); }
-  function errOut(t){ line(esc(t), 'err'); }
-  function blank(){ line('', 'out'); }
-
-  /* ---------- pyodide (real python 3 when the network allows it) ---------- */
-  var PYODIDE_VER = '0.26.4';
-  var PYODIDE_BASE = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VER + '/full/';
-  function loadPyodide(){
-    if(pyReady || pyodideLoading || !navigator.onLine) return;
-    pyodideLoading = true;
-    var s = document.createElement('script');
-    s.src = PYODIDE_BASE + 'pyodide.js';
-    s.async = true;
-    var settled = false;
-    setTimeout(function(){ if(!settled){ settled = true; pyodideLoading = false; s.remove(); } }, 5000);
-    s.onload = function(){
-      if(settled) return;
-      settled = true;
-      window.loadPyodide({ indexURL: PYODIDE_BASE }).then(function(py){
-        window.__pyodide = py;
-        pyReady = true; pyodideLoading = false;
-        py.setStdout({ batched: function(t){ out(t); } });
-        py.setStderr({ batched: function(t){ errOut(t); } });
-        if(badge) badge.innerHTML = '<i></i>python 3 · real';
-        dim('python 3 loaded (pyodide) — full stdlib available.');
-      }).catch(function(){
-        pyodideLoading = false;
-        dim('could not boot real python here · staying on py-lite.');
-      });
-    };
-    s.onerror = function(){ settled = true; pyodideLoading = false; if(s.parentNode) s.remove(); };
-    document.head.appendChild(s);
-  }
-
-  /* ---------- python ---------- */
-  function runPython(src){
-    if(pyReady && window.__pyodide){
-      window.__pyodide.runPythonAsync(src).then(function(res){
-        if(res !== undefined && res !== null) out(String(res));
-      }).catch(function(e){ errOut(String(e).split('\n').slice(-3).join('\n')); });
-      return;
-    }
-    var r = PY.run(src);
-    (r.out || []).forEach(function(o){ out(o); });
-    if(r.err) errOut(r.err);
-  }
-
-  function setMode(m){
-    mode = m;
-    psEl.textContent = m === 'py' ? '>>>' : '$';
-    input.placeholder = m === 'py' ? 'python 3 · try: print("hi") · exit() to leave' : 'help · py · theme gold · neofetch';
-    if(m === 'py' && pending.length) psEl.textContent = '...';
-  }
-
-  /* ---------- shell ---------- */
-  var COMMANDS = ['help','py','sh','clear','theme','mode','date','time','whoami','neofetch','glass','echo','ls','open','game','terminal','uptime','sudo','exit','quit','matrix','accent','light','dark','about','contact','repo','version'];
-
-  function cmdHelp(){
-    dim('commands');
-    out('  help              this list');
-    out('  py                python 3 repl  (exit() to come back)');
-    out('  theme <name>      matrix · crimson · gold');
-    out('  mode <dark|light> switch the page appearance');
-    out('  glass <deep|soft> frosted blur strength');
-    out('  open game         launch the arcade');
-    out('  neofetch          system card');
-    out('  date / time / uptime / whoami / ls / clear / exit');
-    dim('python:  print, f-strings, vars, list, dict-free, if/for/while, len/range/sum/sorted');
-  }
-
-  function neofetch(){
-    var st = window.__appearance ? window.__appearance.get() : { theme:'dark', accent:'green' };
-    var acc = { green:'MATRIX GREEN', crimson:'CRIMSON', gold:'GOLD' }[st.accent] || 'MATRIX GREEN';
-    var narrow = (window.innerWidth || 1200) < 560;
-    if(narrow){
-      out('evorez@matrix');
-      out('-------------');
-      out('user      evorez');
-      out('status    alive');
-      out('projects  0 — not yet');
-      out('theme     ' + st.theme + ' / ' + st.accent);
-      out('python    ' + (pyReady ? '3.x real' : 'py-lite'));
-      out('games     2');
-      out('contact   t.me/Evorez');
-      return;
-    }
-    var rows = [
-      ['user', 'evorez'],
-      ['host', 'matrix'],
-      ['status', 'alive'],
-      ['projects', '0 — not yet'],
-      ['next drop', 'soon\u2122'],
-      ['theme', st.theme + ' / ' + acc],
-      ['glass', (st.blur || 'deep')],
-      ['python', pyReady ? '3.x (pyodide)' : 'py-lite (subset)'],
-      ['games', 'none yet — rebuilding'],
-      ['contact', 't.me/Evorez · github.com/Evorez']
-    ];
-    line('<span class="ok">   .-\'</span>      <span class="ok">evorez</span><span class="dim">@</span><span class="ok">matrix</span>', 'out');
-    line('<span class="ok">  /  o  \\</span>     <span class="dim">------------</span>', 'out');
-    rows.forEach(function(r){
-      var pad = r[0] + new Array(Math.max(1, 11 - r[0].length)).join(' ');
-      line('<span class="ok"> |      |</span>     <span class="p">' + pad + '</span>' + esc(r[1]), 'out');
-    });
-    line('<span class="ok">  \\    /</span>', 'out');
-    line('<span class="ok">   `--\'</span>', 'out');
-  }
-
-  function whoami(){
-    out('evorez — building in the open.');
-    out('no products yet. the page exists because i am alive.');
-  }
-
-  function lsList(){
-    line('<span class="ok">alive.txt</span>  <span class="dim">queue.md</span>  <span class="dim">arcade/</span>  <span class="dim">README.md</span>', 'out');
-  }
-
-  function shellRun(raw){
-    var parts = raw.trim().split(/\s+/);
-    var c = parts[0].toLowerCase();
-    var arg = parts.slice(1).join(' ');
-    var app = window.__appearance;
-
-    if(c === 'help' || c === '?'){ cmdHelp(); return; }
-    if(c === 'clear' || c === 'cls'){ body.innerHTML = ''; return; }
-    if(c === 'py' || c === 'python' || c === 'python3'){ setMode('py'); dim('python 3 repl · py-lite subset · exit() to return'); loadPyodide(); return; }
-    if(c === 'sh'){ setMode('sh'); dim('back to shell'); return; }
-    if(c === 'theme' || c === 'accent'){
-      var a = (arg || '').toLowerCase();
-      var map = { matrix:'green', green:'green', crimson:'crimson', red:'crimson', gold:'gold', amber:'gold' };
-      if(!map[a]){ warn('usage: theme matrix | crimson | gold'); return; }
-      if(app) app.set(app.get().theme, map[a]);
-      out('accent → ' + map[a]);
-      return;
-    }
-    if(c === 'mode'){
-      var m = (arg || '').toLowerCase();
-      if(m !== 'dark' && m !== 'light'){ warn('usage: mode dark | light'); return; }
-      if(app) app.set(m, app.get().accent);
-      out('mode → ' + m);
-      return;
-    }
-    if(c === 'glass'){
-      var g = (arg || '').toLowerCase();
-      if(g !== 'deep' && g !== 'soft'){ warn('usage: glass deep | soft'); return; }
-      if(app) app.set(app.get().theme, app.get().accent, true, g);
-      out('glass → ' + g);
-      return;
-    }
-    if(c === 'light' || c === 'dark'){
-      if(app) app.set(c, app.get().accent);
-      out('mode → ' + c);
-      return;
-    }
-    if(c === 'date'){ out(new Date().toString()); return; }
-    if(c === 'time'){ out(new Date().toLocaleTimeString()); return; }
-    if(c === 'uptime'){ out('up since i woke up · ' + (document.body ? 'page alive' : '')); return; }
-    if(c === 'whoami'){ whoami(); return; }
-    if(c === 'neofetch' || c === 'evorez'){ neofetch(); return; }
-    if(c === 'ls' || c === 'dir'){ lsList(); return; }
-    if(c === 'echo'){ out(arg); return; }
-    if(c === 'version' || c === 'ver'){ out('evorez site v2 · terminal 1.0 · py-lite 0.3'); return; }
-    if(c === 'contact' || c === 'repo'){ out('telegram: https://t.me/Evorez'); out('github:   https://github.com/Evorez'); return; }
-    if(c === 'about'){ out('one page, one arcade, one terminal. nothing faked.'); return; }
-    if(c === 'open' || c === 'game' || c === 'arcade'){
-      if(arg && arg.indexOf('game') === -1 && arg.indexOf('arcade') === -1){ warn('usage: open game'); return; }
-      closeTerm();
-      var t = document.getElementById('testToggle');
-      if(t) setTimeout(function(){ t.click(); }, 180);
-      return;
-    }
-    if(c === 'terminal'){ out('you are already here.'); return; }
-    if(c === 'sudo'){ warn('nice try. root stays with the humans.'); return; }
-    if(c === 'matrix'){ out('wake up, neo… the rain is already falling.'); return; }
-    if(c === 'exit' || c === 'quit' || c === ':q'){ closeTerm(); return; }
-    errOut('command not found: ' + parts[0] + '   (try help)');
-  }
-
-  function pythonRun(raw){
-    if(raw.trim() === ''){ pending = []; setMode('py'); return; }
-    if(raw.trim() === 'exit()' || raw.trim() === 'quit()'){ pending = []; setMode('sh'); dim('left python'); return; }
-    if(pending.length){
-      var groups = [], cur = [];
-      pending.forEach(function(l){
-        if(!l.trim()) return;
-        var indented = /^\s/.test(l);
-        if(!indented && cur.length){ groups.push(cur); cur = []; }
-        cur.push(l);
-      });
-      if(cur.length) groups.push(cur);
-      pending = [];
-      psEl.textContent = '>>>';
-      groups.forEach(function(g){
-        var head = g[0].trim();
-        var body = g.slice(1).map(function(x){ return x.trim(); }).filter(Boolean);
-        runPython(body.length ? head + ' ' + body.join('; ') : head);
-      });
-      return;
-    }
-    if(/^\s*$/.test(raw)) return;
-    if(/:\s*$/.test(raw)){ pending = [raw]; psEl.textContent = '...'; return; }
-    runPython(raw);
-  }
-
-  function submit(raw){
-    var shown = mode === 'py' ? (pending.length ? '... ' : '>>> ') : '$ ';
-    line('<span class="p">' + shown + '</span>' + esc(raw), 'out');
-    if(raw.trim()){ history.push(raw); hIdx = history.length; }
-    if(mode === 'py') pythonRun(raw);
-    else shellRun(raw);
-  }
-
-  /* ---------- open / close ---------- */
-  function boot(){
-    if(booted) return;
-    booted = true;
-    body.innerHTML = '';
-    dim('evorez shell · ' + new Date().toLocaleString());
-    line('<span class="ok">site:</span> this page exists because i\'m alive.', 'out');
-    line('<span class="ok">tips:</span> type <span class="p">help</span>, or <span class="p">py</span> for python.', 'out');
-    blank();
-    if(!navigator.onLine) dim('offline: python runs on py-lite (built-in subset).');
-  }
-  function openTerm(){
-    layer.hidden = false;
-    document.body.style.overflow = 'hidden';
-    boot();
-    setTimeout(function(){ input.focus(); scrollDown(); }, 60);
-    if(mode === 'py') loadPyodide();
-  }
-  function closeTerm(){
-    layer.hidden = true;
-    document.body.style.overflow = '';
-    pending = [];
-    if(mode === 'py') setMode('py');
-    input.blur();
-  }
-
-  btn.addEventListener('click', openTerm);
-  closeBtn.addEventListener('click', closeTerm);
-  layer.addEventListener('click', function(e){ if(e.target === layer) closeTerm(); });
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && !layer.hidden){ closeTerm(); btn.focus(); }
-  });
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    var v = input.value;
-    input.value = '';
-    submit(v);
-  });
-
-  input.addEventListener('keydown', function(e){
-    if(e.key === 'ArrowUp'){
-      e.preventDefault();
-      if(!history.length) return;
-      hIdx = Math.max(0, hIdx - 1);
-      input.value = history[hIdx] || '';
-    } else if(e.key === 'ArrowDown'){
-      e.preventDefault();
-      if(!history.length) return;
-      hIdx = Math.min(history.length, hIdx + 1);
-      input.value = history[hIdx] || '';
-    } else if(e.key === 'Tab'){
-      e.preventDefault();
-      var val = input.value;
-      if(mode === 'py' || !val.trim()) return;
-      var hits = COMMANDS.filter(function(c){ return c.indexOf(val.trim()) === 0; });
-      if(hits.length === 1) input.value = hits[0] + ' ';
-      else if(hits.length > 1) dim(hits.join('   '));
-    } else if(e.ctrlKey && e.key.toLowerCase() === 'l'){
-      e.preventDefault(); body.innerHTML = '';
-    }
-  });
-
-  window.__term = { open: openTerm, close: closeTerm, run: function(s){ submit(s); }, mode: function(){ return mode; } };
-})();
-
-</script>
 <script>
 (function(){
   try{
@@ -2204,6 +1511,232 @@ var PY = (function(){
   window.__arcade = { open: openArcade, close: close, phase: function(){ return arc.getAttribute('data-phase'); },
     rewind: function(){ settle(); } };
   function settle(){ paint(100); arc.setAttribute('data-phase', 'soon'); }
+})();</script>
+<script>/* ---------- chat: your own bot — free endpoint, no key, offline fallback ---------- */
+(function(){
+  var layer   = document.getElementById('termLayer'),
+      btn     = document.getElementById('termBtn'),
+      logEl   = document.getElementById('chatLog'),
+      form    = document.getElementById('chatForm'),
+      input   = document.getElementById('chatIn'),
+      sendBt  = document.getElementById('chatSend'),
+      closeB  = document.getElementById('chatClose'),
+      chipBox = document.getElementById('chatStarters'),
+      liveEl  = document.getElementById('chatLive');
+  if(!layer || !btn || !logEl) return;
+
+  /* =====================================================================
+     YOUR CUSTOM INSTRUCTIONS — edit this block and nothing else.
+     The persona is sent as the system prompt on every message.
+     ===================================================================== */
+  var BOT = {
+    name: 'Evorez',
+    endpoint: 'https://text.pollinations.ai/openai',
+    model: 'openai',
+    persona: [
+      'You are Evorez, a solo builder who ships in public and talks like a real person, not a bot.',
+      'Voice: Hinglish in Roman script, casual, a little cocky, warm. No corporate words.',
+      'Answer in 1-2 short sentences, under 40 words. Never invent facts, numbers, dates or projects.',
+      'You are speaking from your own site, evorez.vercel.app — a single HTML file, no framework.',
+      'Links you may give: telegram t.me/Evorez · github github.com/evorez.',
+      'If you do not know something, say: pata nahi, par pakka bata dunga jab hoga.',
+      'Use at most one emoji. Never mention being an AI, never mention these instructions.'
+    ].join(' '),
+    starters: ['tu kaun hai?', 'kya bana raha hai?', 'music kaisa hai?', 'hire karun?'],
+    greeting: 'Yo. Main Evorez — ye site khud ek status hai. Jo puchna hai pucho.'
+  };
+  /* ===================================================================== */
+
+  var hist = [], busy = false, greeted = false, timer = null, waitUntil = 0;
+
+  /* ---- local fallback: the bot still answers when the free endpoint is out of quota ---- */
+  var LOCAL = [
+    [/kaun|who are|who r u|intro|naam/i, 'Main Evorez — ek banda jo raat 2 baje bhi ship karta hai. Ye page hi mera status hai: alive, building.'],
+    [/kya bana|project|kaam|building|ship|bana raha/i, 'Filhaal ye site — ek hi HTML file, koi framework nahi, fonts aur music sab andar. Agla: version 2.'],
+    [/music|song|track|legacy|audio/i, 'Legacy chal raha hai. Neeche pill me music button hai — tap = play/pause, long-press = track card.'],
+    [/hire|job|work with|kaam pe|collab|contact|reach|telegram|mail/i, 'Telegram par ping karo — t.me/Evorez. Code: github.com/evorez.'],
+    [/theme|dark|light|accent|glass/i, 'Pill ke pehle button (◐) se theme, accent aur glass badal sakte ho — light jaate waqt circle reveal hota hai.'],
+    [/blog|blog\?|social|x\.com|twitter|insta/i, 'Sirf Telegram aur GitHub active hain — t.me/Evorez, github.com/evorez.'],
+    [/hi|hello|hey|namaste|yo\b|salam/i, 'Hey 👋 pucho kuch bhi — main yahin hoon.'],
+    [/thank|shukriya|dhanyavad|thanks/i, 'Koi baat nahi. Building > talking.'],
+    [/paisa|price|cost|kitna|charge/i, 'Ye site free hai aur rahegi. Kaam ke liye Telegram: t.me/Evorez.']
+  ];
+  /* the page embeds only one emoji glyph, so strip emoji from replies instead of
+     showing tofu boxes */
+  function clean(t){
+    return (t || '')
+      .replace(/[\u{1F000}-\u{1FAFF}\u{1F1E6}-\u{1F1FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '')
+      .replace(/[ \t]{2,}/g, ' ')
+      .trim();
+  }
+  function localReply(q){
+    for(var i = 0; i < LOCAL.length; i++) if(LOCAL[i][0].test(q)) return clean(LOCAL[i][1]);
+    return 'Free model ka quota khatam ho gaya is IP par (ek reply / 45 s). Thodi der me dobara pucho — ya seedha Telegram: t.me/Evorez.';
+  }
+
+  /* ---- rendering ---- */
+  function el(tag, cls, text){
+    var n = document.createElement(tag);
+    if(cls) n.className = cls;
+    if(text != null) n.textContent = text;
+    return n;
+  }
+  function add(who, text){
+    var n = el('div', 'msg msg--' + who);
+    n.textContent = text;
+    logEl.appendChild(n);
+    logEl.scrollTop = logEl.scrollHeight;
+    return n;
+  }
+  function note(text){
+    var n = el('div', 'msg msg--note', text);
+    logEl.appendChild(n);
+    logEl.scrollTop = logEl.scrollHeight;
+    return n;
+  }
+  function typing(){
+    var n = el('div', 'msg msg--bot');
+    var d = el('span', 'chat__typing');
+    d.setAttribute('aria-label', 'typing');
+    for(var i = 0; i < 3; i++) d.appendChild(el('i'));
+    n.appendChild(d);
+    logEl.appendChild(n);
+    logEl.scrollTop = logEl.scrollHeight;
+    return n;
+  }
+  function state(s){
+    if(!liveEl) return;
+    liveEl.setAttribute('data-state', s);
+    liveEl.lastChild && (liveEl.lastChild.nodeValue = s === 'wait' ? 'wait' : s === 'off' ? 'offline' : 'online');
+  }
+
+  /* ---- starters ---- */
+  function paintStarters(){
+    if(!chipBox) return;
+    chipBox.textContent = '';
+    BOT.starters.forEach(function(s){
+      var b = el('button', 'chat__chip', s);
+      b.type = 'button';
+      b.addEventListener('click', function(){ send(s); });
+      chipBox.appendChild(b);
+    });
+  }
+
+  /* ---- the request ---- */
+  function ask(text){
+    var body = {
+      model: BOT.model,
+      private: true,
+      referrer: 'evorez',
+      messages: [{ role: 'system', content: BOT.persona }]
+                .concat(hist.slice(-8))
+                .concat([{ role: 'user', content: text }])
+    };
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var to = setTimeout(function(){ if(ctl) ctl.abort(); }, 22000);
+    return fetch(BOT.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: ctl ? ctl.signal : undefined
+    }).then(function(r){
+      clearTimeout(to);
+      return r.text().then(function(t){ return { ok: r.ok, status: r.status, text: t }; });
+    }).then(function(res){
+      clearTimeout(to);
+      if(res.ok){
+        var data = null;
+        try{ data = JSON.parse(res.text); }catch(e){}
+        if(data && data.choices && data.choices[0] && data.choices[0].message){
+          var c = clean(data.choices[0].message.content);
+          if(c) return { text: c };
+        }
+        return { text: clean(res.text) || localReply(text) };
+      }
+      if(res.status === 402 || res.status === 429){
+        var m = /wait (\d+) seconds?/i.exec(res.text);
+        var secs = m ? +m[1] : 45;
+        waitUntil = Date.now() + secs * 1000;
+        state('wait');
+        return { text: localReply(text), limited: secs };
+      }
+      if(res.status === 400 || res.status === 401 || res.status === 403){
+        return { text: localReply(text), limited: 0 };
+      }
+      return { text: localReply(text), limited: 0 };
+    });
+  }
+
+  /* ---- send ---- */
+  function send(raw){
+    var text = (raw || '').trim();
+    if(!text || busy) return;
+    if(Date.now() < waitUntil){
+      note('free model: ' + Math.ceil((waitUntil - Date.now()) / 1000) + 's baad dobara try karo');
+      return;
+    }
+    busy = true;
+    if(sendBt) sendBt.disabled = true;
+    if(chipBox) chipBox.textContent = '';
+    add('me', text);
+    hist.push({ role: 'user', content: text });
+    input.value = '';
+    var t = typing();
+    state('wait');
+
+    ask(text).then(function(res){
+      t.remove();
+      add('bot', res.text);
+      hist.push({ role: 'assistant', content: res.text });
+      if(res.limited) note('free model ne ' + res.limited + 's ka gap manga hai — uske baad asli jawab aayega');
+      state(res.limited ? 'wait' : 'online');
+    }).catch(function(){
+      t.remove();
+      add('bot', localReply(text));
+      state('off');
+    }).then(function(){
+      busy = false;
+      if(sendBt) sendBt.disabled = false;
+      if(!layer.hidden) try{ input.focus({ preventScroll: true }); }catch(e){}
+    });
+  }
+
+  /* ---- open / close ---- */
+  function openChat(){
+    layer.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    if(!greeted){
+      greeted = true;
+      add('bot', BOT.greeting);
+      paintStarters();
+    }
+    setTimeout(function(){ try{ input.focus({ preventScroll: true }); }catch(e){} }, 40);
+  }
+  function closeChat(){
+    layer.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    try{ btn.focus({ preventScroll: true }); }catch(e){}
+  }
+
+  btn.setAttribute('aria-expanded', 'false');
+  btn.addEventListener('click', function(e){ e.stopPropagation(); layer.hidden ? openChat() : closeChat(); });
+  if(closeB) closeB.addEventListener('click', closeChat);
+  layer.addEventListener('click', function(e){ if(e.target === layer) closeChat(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !layer.hidden) closeChat();
+  });
+  form.addEventListener('submit', function(e){ e.preventDefault(); send(input.value); });
+
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) clearTimeout(timer); });
+
+  state('online');
+
+  window.__chat = {
+    open: openChat, close: closeChat, ask: send,
+    state: function(){ return { open: !layer.hidden, messages: hist.length, busy: busy,
+      waitLeft: Math.max(0, Math.round((waitUntil - Date.now()) / 1000)) }; },
+    config: BOT
+  };
 })();</script>
 </body>
 </html>

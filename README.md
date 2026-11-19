@@ -22,6 +22,22 @@ A single-file, production-ready landing page. No build step, no dependencies, no
 (Inter + JetBrains Mono), the brand logo, and the author portrait — so it renders identically
 offline and inside sandboxed previews.
 
+## The chat (replaces the old terminal)
+
+The dock's third button opens **Evorez's chat** — a real LLM with no key in the page.
+
+- endpoint: `https://text.pollinations.ai/openai` (free tier, no key, CORS `*`), OpenAI-compatible
+- **your persona / custom instructions** live in `src/chat.js` → the `BOT` block (`persona`, `starters`,
+  `greeting`, `model`). That is the only place to edit; the build inlines the file.
+- free tier allows **one reply per 45 s per IP**; when it answers with `402` the bot shows the wait
+  in the header, counts down, and falls back to a local Hinglish reply bank (`LOCAL[]`) so it never
+  goes silent
+- emoji are stripped from replies (the page embeds exactly one emoji glyph — 👀 — so anything else
+  would render as tofu)
+- `py-lite` and the whole terminal script were removed with it (−32 KB)
+
+![Chat](docs/chat.jpg)
+
 ## Brand assets
 
 | Asset | Source | In the page |

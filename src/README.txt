@@ -75,3 +75,11 @@ music.js (2026-11 rebuild)
     and a tap on a still-suspended context resumes instead of muting).
   - long press 460 ms on #musicBtn opens #trackPop (island morph + #scrim blur); tapping an item
     switches track with a 0.22 s fade. Hooks: window.__music.state()/pick()/open()/close()/toggle().
+
+chat.js / chat.css  (2026-11-19)
+  - replaces the terminal: #termLayer now holds the chat panel, #termBtn opens it.
+  - BOT = your custom instructions (system prompt), starters, greeting, endpoint + model.
+  - POST {model, messages, private:true} -> choices[0].message.content.
+  - 402/429 => read "wait N seconds" from the body, set waitUntil, answer from LOCAL[] instead.
+  - clean() strips emoji because only U+1F440 is embedded.
+  - hooks: window.__chat.open()/close()/ask()/state()/config

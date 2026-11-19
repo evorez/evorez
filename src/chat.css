@@ -1,0 +1,47 @@
+/* ---------- chat: bubbles, typing dots, starter chips ---------- */
+.chat__log{display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:12.5px;line-height:1.62;
+  white-space:pre-wrap;overflow-wrap:anywhere;
+  animation:msgIn .2s cubic-bezier(.22,.68,.2,1)}
+.msg--bot{align-self:flex-start;border-bottom-left-radius:5px;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:#dcf6e7}
+.msg--me{align-self:flex-end;border-bottom-right-radius:5px;
+  background:rgba(var(--green-rgb),.16);border:1px solid rgba(var(--green-rgb),.34);color:#eafff3}
+.msg--note{align-self:center;max-width:100%;background:transparent;border:0;padding:2px 0;
+  font-size:10.5px;letter-spacing:.06em;color:rgba(200,230,212,.52)}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chat__typing{display:inline-flex;gap:4px;align-items:center;height:1em}
+.chat__typing i{display:block;width:5px;height:5px;border-radius:50%;background:currentColor;
+  opacity:.45;animation:typeDot 1.05s ease-in-out infinite}
+.chat__typing i:nth-child(2){animation-delay:.14s}
+.chat__typing i:nth-child(3){animation-delay:.28s}
+@keyframes typeDot{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-3px);opacity:.9}}
+.chat__starters{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px;flex:none}
+.chat__starters:empty{display:none}
+.chat__chip{font:inherit;font-size:11px;letter-spacing:.02em;cursor:pointer;
+  padding:6px 11px;border-radius:999px;color:rgba(226,244,232,.82);
+  border:1px solid rgba(150,255,200,.24);background:rgba(255,255,255,.04);
+  transition:background .18s ease,border-color .18s ease,transform .22s cubic-bezier(.22,.68,.2,1)}
+.chat__chip:hover{background:rgba(var(--green-rgb),.14);border-color:rgba(var(--green-rgb),.45);transform:translateY(-1px)}
+.chat__chip:active{transform:scale(.97)}
+.chat__send{width:32px;height:32px;flex:none;display:grid;place-items:center;cursor:pointer;
+  border-radius:999px;font-size:15px;line-height:1;color:#eafff2;
+  border:1px solid rgba(var(--green-rgb),.42);background:rgba(var(--green-rgb),.18);
+  transition:background .18s ease,transform .22s cubic-bezier(.22,.68,.2,1),opacity .18s ease}
+.chat__send:hover{background:rgba(var(--green-rgb),.3);transform:translateY(-1px)}
+.chat__send:active{transform:scale(.94)}
+.chat__send[disabled]{opacity:.45;cursor:default;transform:none}
+.chat__live{display:inline-flex;align-items:center;gap:5px;margin-left:auto;
+  font-size:9.5px;letter-spacing:.14em;color:rgba(var(--gb-rgb),.85)}
+.chat__live i{width:5px;height:5px;border-radius:50%;background:var(--green-bright);
+  box-shadow:0 0 8px rgba(var(--green-rgb),.9)}
+.chat__live[data-state="wait"] i{background:#f0c14b;box-shadow:0 0 8px rgba(240,193,75,.9)}
+.chat__live[data-state="off"] i{background:#e5455a;box-shadow:0 0 8px rgba(229,69,90,.9)}
+html[data-theme="light"] .msg--bot{background:rgba(10,21,16,.055);border-color:rgba(10,21,16,.1);color:#10261a}
+html[data-theme="light"] .msg--me{background:rgba(10,120,70,.13);border-color:rgba(10,120,70,.3);color:#08281a}
+html[data-theme="light"] .msg--note{color:rgba(16,38,26,.5)}
+html[data-theme="light"] .chat__chip{color:rgba(16,38,26,.8);border-color:rgba(10,120,70,.28);background:rgba(255,255,255,.6)}
+@media (prefers-reduced-motion:reduce){
+  .msg{animation:none}
+  .chat__typing i{animation:none;opacity:.6}
+}

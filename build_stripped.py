@@ -354,6 +354,11 @@ TRACK_MARKUP = """<div class="scrim" id="scrim" hidden></div>
 """
 
 
+with open('src/chat.js', encoding='utf-8') as fh:
+    CHAT_JS = fh.read()
+with open('src/chat.css', encoding='utf-8') as fh:
+    CHAT_CSS = fh.read()
+
 with open('src/music.js', encoding='utf-8') as fh:
     MUSIC_JS = fh.read()
 for _k, _f in (('__LEGACY_B64__', 'src/legacy.mp3'),):
@@ -653,8 +658,53 @@ def main():
       drops[i] += step;""", 1)
     log.append('%-28s %d fps -> display' % ('rain:', 15))
 
+
+    # 5f. the terminal becomes the chat: drop py-lite + the terminal script, swap the panel
+    py_a = s.find('/* ---------- py-lite')
+    if py_a == -1:
+        raise SystemExit('py-lite script not found')
+    py_a = s.rfind('<script>', 0, py_a)
+    term_a = s.find('/* ============ terminal (shell + python repl)')
+    if term_a == -1:
+        raise SystemExit('terminal script not found')
+    term_b = s.find('</script>', term_a)
+    if term_b == -1:
+        raise SystemExit('terminal script end not found')
+    term_b += len('</script>')
+    cut_len = term_b - py_a
+    s = s[:py_a] + s[term_b:]
+    log.append('%-28s -%d bytes' % ('removed: terminal + py-lite', cut_len))
+
+    ts, te = div_span(s, 'termLayer')
+    CHAT_MARKUP = """<div class="term" id="termLayer" hidden>
+  <div class="term__box" role="dialog" aria-modal="true" aria-labelledby="chatName">
+    <div class="term__bar">
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span id="chatName"><b>Evorez</b> &middot; ask me anything</span>
+      <span class="chat__live" id="chatLive" data-state="online"><i></i>online</span>
+      <button class="term__x" id="chatClose" type="button" aria-label="Close chat">&times;</button>
+    </div>
+    <div class="term__body chat__log" id="chatLog" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation"></div>
+    <div class="chat__starters" id="chatStarters"></div>
+    <form class="term__prompt" id="chatForm" autocomplete="off">
+      <span class="term__ps" aria-hidden="true">&gt;</span>
+      <input class="term__in" id="chatIn" name="msg" type="text" autocomplete="off" autocapitalize="sentences"
+             enterkeyhint="send" maxlength="400" aria-label="Message Evorez"
+             placeholder="kuch bhi pucho — kaun ho, kya bana raha hai, hire karun?" />
+      <button class="chat__send" id="chatSend" type="submit" aria-label="Send message">&uarr;</button>
+    </form>
+    <p class="term__hint"><span>free model</span><span>ek reply / 45s</span><span>galat bhi ho sakta hai</span><span>esc close</span></p>
+  </div>
+</div>"""
+    s = s[:ts] + CHAT_MARKUP + s[te:]
+    s = s.replace('aria-label="Open the terminal"', 'aria-label="Chat with Evorez"', 1)
+    s = s.replace('<span>TERMINAL</span>', '<span>CHAT</span>', 1)
+    j = s.find('</style>')
+    s = s[:j] + CHAT_CSS + s[j:]
+    log.append('%-28s chat panel + css' % 'terminal -> chat:')
+
     # 6. scripts at the end of the body: appearance first, then the arcade loader
-    s = s.replace('</body>', TRACK_MARKUP + pop_html + '\n' + appearance_js + MUSIC_JS + ARCADE_JS + '</body>')
+    s = s.replace('</body>', TRACK_MARKUP + pop_html + '\n' + appearance_js + MUSIC_JS + ARCADE_JS + CHAT_JS + '</body>')
 
     open(OUT, 'w', encoding='utf-8').write(s)
     print('\n'.join(log))
