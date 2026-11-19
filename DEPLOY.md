@@ -102,3 +102,37 @@ python3 -m http.server 8080      # phir browser mein: http://localhost:8080
 
 `.com` ~₹900–1,200/saal (Namecheap, Cloudflare Registrar, Porkbun). Registrar sasta rakhein,
 DNS Cloudflare par daal dein — free CDN, fast DNS, aur HTTPS ek click.
+
+---
+
+## Git + PR flow (repo ready hai)
+
+Local repo bana diya gaya hai: `main` par site, aur `ci/build-check` branch par ek CI workflow
+(`.github/workflows/site.yml`) — yani pehla PR taiyaar hai.
+
+```bash
+cd evorez
+
+# 1) GitHub par khaali repo banao (README/gitignore ke bina), phir:
+git remote add origin git@github.com:<tumhara-user>/evorez.git
+git push -u origin main
+git push -u origin ci/build-check
+
+# 2) PR kholo
+#    https://github.com/<tumhara-user>/evorez/compare/main...ci/build-check?expand=1
+```
+
+`gh` CLI ho to:
+
+```bash
+gh repo create evorez --private --source=. --remote=origin --push
+gh pr create --base main --head ci/build-check \
+  --title "ci: rebuild and verify the single file" \
+  --body "Adds a build + invariant check for index.html."
+```
+
+PR merge hone ke baad `main` hi production branch hai. Vercel par repo connect kar do to
+har push par preview + production deploy apne aap ho jayega (Project → Settings → Git).
+
+**Note:** `versions/` aur `previews/` .gitignore mein hain (33 MB + 7 MB drafts/screenshots),
+`index.stripped.html` aur `evorez-site.zip` bhi — wo build par regenerate ho jate hain.
