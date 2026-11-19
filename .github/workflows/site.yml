@@ -34,9 +34,17 @@ jobs:
                         'id="appearPop"', 'class="rome"', 'id="dock"'):
               assert token in s, 'missing ' + token
           assert re.search(r'<script[^>]+\bsrc=', s) is None, 'external script found'
-          assert re.search(r'<link[^>]+href="https?://', s) is None, 'external stylesheet found'
+          # canonical is the only allowed absolute <link>; nothing may be fetched
+          ext = [m.group(0) for m in re.finditer(r'<link[^>]+href="https?://[^"]*"', s)
+                 if 'rel="canonical"' not in m.group(0)]
+          assert not ext, 'external stylesheet found: ' + str(ext)
           for gone in ('NEON NAGAR', 'matrix_run.exe', 'snake.exe', 'cityLayer'):
               assert gone not in s, 'removed feature came back: ' + gone
+          # ownership + behaviour guards
+          assert 'Copyright (c) 2026 Evorez' in s, 'copyright comment missing'
+          assert 'rel="canonical" href="https://evorez.vercel.app/"' in s, 'canonical missing'
+          assert "a.id = 'copynote'" in s, 'copy guard missing'
+          assert 'on by default' not in s, 'music autostart came back'
           if len(s.encode()) > 900_000:
               sys.exit('index.html grew past 900 KB - check the embedded audio')
           print('ok - %d bytes, no external requests' % len(s.encode()))
