@@ -708,7 +708,7 @@ def main():
              placeholder="kuch bhi pucho — kaun ho, kya bana raha hai, hire karun?" />
       <button class="chat__send" id="chatSend" type="submit" aria-label="Send message">&uarr;</button>
     </form>
-    <p class="term__hint"><span>free model</span><span>ek reply / 45s</span><span>galat bhi ho sakta hai</span><span>esc close</span></p>
+    <p class="term__hint"><span>free model</span><span>instant answers</span><span>galat bhi ho sakta hai</span><span>esc close</span></p>
   </div>
 </div>"""
     s = s[:ts] + CHAT_MARKUP + s[te:]
