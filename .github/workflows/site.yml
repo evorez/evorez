@@ -42,7 +42,7 @@ jobs:
               assert gone not in s, 'removed feature came back: ' + gone
           # ownership + behaviour guards
           assert 'Copyright (c) 2026 Evorez' in s, 'copyright comment missing'
-          assert 'rel="canonical" href="https://evorez.vercel.app/"' in s, 'canonical missing'
+          assert 'rel="canonical" href="https://evorez.in/"' in s, 'canonical missing'
           assert "a.id = 'copynote'" in s, 'copy guard missing'
           assert 'on by default' not in s, 'music autostart came back'
           if len(s.encode()) > 900_000:

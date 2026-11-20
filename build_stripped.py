@@ -951,7 +951,7 @@ html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180d
     _fp = _hl.sha256((_dt.datetime.utcnow().strftime(TAG) + str(len(s))).encode()).hexdigest()[:12]
     META = (
         '<!--\n'
-        '  Evorez \u2014 https://evorez.vercel.app\n'
+        '  Evorez \u2014 https://evorez.in\n'
         '  Copyright (c) 2026 Evorez. All rights reserved. This file, its design, its copy,\n'
         '  the avatar, the fonts and the audio are the author\'s work. Copying, republishing\n'
         '  or rehosting it whole, or rebuilding it as your own, is not permitted.\n'
@@ -960,21 +960,21 @@ html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180d
         '<meta name="author" content="Evorez">\n'
         '<meta name="copyright" content="\u00a9 2026 Evorez \u2014 all rights reserved">\n'
         '<meta name="robots" content="index,follow">\n'
-        '<link rel="canonical" href="https://evorez.vercel.app/">\n'
+        '<link rel="canonical" href="https://evorez.in/">\n'
         '<meta property="og:type" content="website">\n'
         '<meta property="og:title" content="Evorez \u2014 this page exists because I\'m alive">\n'
-        '<meta property="og:url" content="https://evorez.vercel.app/">\n'
+        '<meta property="og:url" content="https://evorez.in/">\n'
         '<meta property="og:site_name" content="Evorez">\n')
     if '<link rel="canonical"' in s:
         raise SystemExit('canonical already present')
     s = s.replace('</head>', META + '</head>', 1)
 
     GUARD = """<script>
-/* copy guard: the page is meant to live at evorez.vercel.app only. An unlisted host
+/* copy guard: the page is meant to live at evorez.in only. An unlisted host
    still renders (so previews and the saved file keep working) but gets a badge and a
    console warning, which is enough to prove a lifted copy in a takedown request. */
 (function(){
-  var OK = ['evorez.vercel.app', 'evorez.github.io', 'evorez.in', 'www.evorez.in', 'localhost', '127.0.0.1', '[::1]'];
+  var OK = ['evorez.in', 'www.evorez.in', 'evorez.vercel.app', 'evorez.github.io', 'localhost', '127.0.0.1', '[::1]'];
   var h = location.hostname || '';
   if (location.protocol === 'file:' || !h || OK.indexOf(h) > -1) return;
   if (/(^|\\.)(e2b\\.app|arena\\.ai|vercel\\.app)$/.test(h)) return;
@@ -982,8 +982,8 @@ html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180d
     if (document.getElementById('copynote')) return;
     var a = document.createElement('a');
     a.id = 'copynote';
-    a.href = 'https://evorez.vercel.app/';
-    a.textContent = 'unofficial copy \\u00b7 evorez.vercel.app';
+    a.href = 'https://evorez.in/';
+    a.textContent = 'unofficial copy \\u00b7 evorez.in';
     a.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:99999;' +
       'font:600 10.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.09em;' +
       'text-transform:uppercase;text-decoration:none;color:#ffe9e9;' +
@@ -992,7 +992,7 @@ html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180d
     document.body.appendChild(a);
   }
   if (document.body) badge(); else document.addEventListener('DOMContentLoaded', badge);
-  try{ console.warn('%cThis page is an unauthorised copy of Evorez \\u2014 https://evorez.vercel.app',
+  try{ console.warn('%cThis page is an unauthorised copy of Evorez \\u2014 https://evorez.in',
     'color:#ff7b7b;font-weight:700'); }catch(e){}
 })();
 </script>
