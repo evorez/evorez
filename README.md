@@ -1,6 +1,6 @@
 # Evorez — landing page
 
-**Live:** https://evorez.vercel.app
+**Live:** https://evorez.in
 
 ![Evorez — the hero card, dark](docs/hero.jpg)
 
