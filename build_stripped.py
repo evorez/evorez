@@ -974,7 +974,7 @@ html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180d
    still renders (so previews and the saved file keep working) but gets a badge and a
    console warning, which is enough to prove a lifted copy in a takedown request. */
 (function(){
-  var OK = ['evorez.vercel.app', 'localhost', '127.0.0.1', '[::1]'];
+  var OK = ['evorez.vercel.app', 'evorez.github.io', 'evorez.in', 'www.evorez.in', 'localhost', '127.0.0.1', '[::1]'];
   var h = location.hostname || '';
   if (location.protocol === 'file:' || !h || OK.indexOf(h) > -1) return;
   if (/(^|\\.)(e2b\\.app|arena\\.ai|vercel\\.app)$/.test(h)) return;

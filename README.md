@@ -1,6 +1,7 @@
 # Evorez — landing page
 
 **Live:** https://evorez.vercel.app
+**Mirror (GitHub Pages):** https://evorez.github.io/
 
 ![Evorez — the hero card, dark](docs/hero.jpg)
 
