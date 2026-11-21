@@ -1,7 +1,7 @@
 # Evorez — landing page
 
 **Live:** https://evorez.in
-**Deploy:** https://evorez.vercel.app (production) · **Mirror:** https://evorez.github.io/
+**Deploy:** https://evorez.vercel.app (production) · **Mirror:** https://evorez.github.io/ (301 → evorez.in)
 
 ![Evorez — the hero card, dark](docs/hero.jpg)
 
