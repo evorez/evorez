@@ -136,3 +136,14 @@ har push par preview + production deploy apne aap ho jayega (Project → Setting
 
 **Note:** `versions/` aur `previews/` .gitignore mein hain (33 MB + 7 MB drafts/screenshots),
 `index.stripped.html` aur `evorez-site.zip` bhi — wo build par regenerate ho jate hain.
+
+## Chat backend (Supabase)
+
+The chat panel calls an Edge Function instead of talking to a model directly, so the
+model key never ships to the browser even though the repo is public.
+
+- Project: `evorez` · ref `khkkqkpzutqltbzfhfuf` · region `ap-south-1` (org `Evorez`)
+- Function: `chat` → `https://khkkqkpzutqltbzfhfuf.supabase.co/functions/v1/chat`
+- Tables: `public.chat_messages` (session thread) and `public.chat_usage` (40 msgs/day/session), both RLS-on with no policies — only the service role inside the function touches them.
+- Secrets: `GEMINI_API_KEY` (optional). Set it once and the function uses Gemini; without it the function falls back to the free endpoint, so the bot never goes dark.
+- Request: `POST {"session_id":"…","message":"…"}` → `{"reply":"…","model":"…"}`

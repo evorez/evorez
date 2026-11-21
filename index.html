@@ -769,7 +769,7 @@ r.setAttribute('data-theme',t);r.setAttribute('data-accent',c);r.setAttribute('d
   Copyright (c) 2026 Evorez. All rights reserved. This file, its design, its copy,
   the avatar, the fonts and the audio are the author's work. Copying, republishing
   or rehosting it whole, or rebuilding it as your own, is not permitted.
-  Build 2026-11-20 · 7b4b8289351f
+  Build 2026-11-21 · 30a088856dea
 -->
 <meta name="author" content="Evorez">
 <meta name="copyright" content="© 2026 Evorez — all rights reserved">
@@ -1643,7 +1643,8 @@ window.__pal = (function(){
     rewind: function(){ settle(); } };
   function settle(){ paint(100); arc.setAttribute('data-phase', 'soon'); }
 })();</script>
-<script>/* ---------- chat: your own bot — free endpoint, no key, offline fallback ---------- */
+<script>/* ---------- chat: the bot. Supabase function keeps the model key server-side; the free
+   endpoint and the local brain are the fallbacks, so the panel never dies. ---------- */
 (function(){
   var layer   = document.getElementById('termLayer'),
       btn     = document.getElementById('termBtn'),
@@ -1663,6 +1664,7 @@ window.__pal = (function(){
   var BOT = {
     name: 'Evorez',
     endpoint: 'https://text.pollinations.ai/openai',
+    backend: 'https://khkkqkpzutqltbzfhfuf.supabase.co/functions/v1/chat',
     model: 'openai',
     timeout: 16000,
     persona: [
@@ -1813,8 +1815,39 @@ window.__pal = (function(){
     });
   }
 
-  /* ---- the request ---- */
+  /* ---- session id so the backend can remember the thread ---- */
+  function sessionId(){
+    var k = 'evorez.chat.sid', v = '';
+    try{ v = localStorage.getItem(k) || ''; }catch(e){}
+    if(!v){
+      v = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      try{ localStorage.setItem(k, v); }catch(e){}
+    }
+    return v;
+  }
+
+  /* ---- backend first: the key lives in the Supabase function, never here ---- */
+  function askBackend(text){
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var to = setTimeout(function(){ if(ctl) ctl.abort(); }, BOT.timeout);
+    return fetch(BOT.backend, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId(), message: text }),
+      signal: ctl ? ctl.signal : undefined
+    }).then(function(r){
+      clearTimeout(to);
+      if(!r.ok) return null;
+      return r.json().then(function(d){ return (d && d.reply) ? { text: clean(d.reply) } : null; }).catch(function(){ return null; });
+    }).catch(function(){ clearTimeout(to); return null; });
+  }
+
   function ask(text){
+    return askBackend(text).then(function(r){ return r || askFree(text); });
+  }
+
+  /* ---- the free fallback request ---- */
+  function askFree(text){
     var body = {
       model: BOT.model,
       private: true,
