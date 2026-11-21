@@ -14,10 +14,11 @@
   var BOT = {
     backend: 'https://khkkqkpzutqltbzfhfuf.supabase.co/functions/v1/chat',
     timeout: 11500,
-    starters: ['who are you?', 'what are you building?', 'how is the music?', 'should I hire you?'],
+    starters: ['who are you?', 'what is EZseed?', 'how is the music?', 'how do I get in touch?'],
     greeting: 'Hey. I am Evorez, and this page is the status update. Ask me anything.'
   };
-  var busy = false, greeted = false, turns = 0, waitUntil = 0;
+  var busy = false, greeted = false, turns = 0;
+  var BASIC_REPLY = 'I can still help with Evorez, this site, EZseed, the music, or getting in touch. Pick a topic below.';
   var mobile = window.matchMedia('(pointer: coarse)');
   var viewport = window.visualViewport, preconnect = null;
 
@@ -25,11 +26,13 @@
   var FAQ = [
     [/\b(kaun|who are|who r u|who is|intro|naam|name)\b/i,
      'I am Evorez, a solo builder who ships in public. This page is the status update: alive, building.'],
+    [/\b(ezseed|minecraft seed|seed map)\b/i,
+     'EZseed is a Minecraft seed map for Java and Bedrock. Try it at https://evorez.in/ezseed/.'],
     [/\b(kya bana|kya banaya|what is this|whats this|this site|ye site|project|work on|building|bana raha|banaya hai)\b/i,
-     'This site is the project: one HTML file, no framework, fonts and music embedded. Version 2 is in the works.'],
+     'This profile is one HTML file with embedded fonts and music. I also built EZseed, a Minecraft seed map: https://evorez.in/ezseed/.'],
     [/\b(music|song|track|legacy|nostalgia|og|audio|sound|gaana)\b/i,
-     'Nostalgia plays by default, 2:00 long. Long-press the music button in the pill to switch to OG (1:22) or Legacy (2:31).'],
-    [/\b(hire|job|collab|contact|reach|telegram|mail|email|talk)\b/i,
+     'Music starts off. Tap the music button for Nostalgia, or long-press it to choose OG or Legacy.'],
+    [/\b(hire|job|collab|contact|reach|get in touch|telegram|mail|email|talk)\b/i,
      'For work or collabs: evorez.alive@gmail.com, or Telegram t.me/Evorez. Code lives at github.com/Evorez.'],
     [/\b(theme|dark|light|accent|glass|colour|color)\b/i,
      'The first button in the pill switches theme, accent colour and glass. Going light plays a circle reveal.'],
@@ -38,13 +41,11 @@
     [/\b(blog|social|twitter|insta|x\.com)\b/i,
      'Only Telegram and GitHub: t.me/Evorez and github.com/Evorez.'],
     [/\b(ai|bot|llm|model|are you real)\b/i,
-     'Yes, a free model sits behind this chat, no paid key. When its quota runs out I answer from local notes.'],
+     'Gemini handles live chat. Quick answers about the profile, music, EZseed and contact details work even without it.'],
     [/\b(price|cost|charge|free|money)\b/i,
      'This site is free and stays free. For paid work, Telegram: t.me/Evorez.'],
     [/\b(uptime|clock|time|footer|2026)\b/i,
      'The footer is honest about it: uptime, since I woke up. The clock ticks every second and 2026 is chased.'],
-    [/\b(v2|version 2|next|future|roadmap|plan)\b/i,
-     'Next is version 2: same single file, faster and cleaner. Updates go out on Telegram.'],
     [/\b(hi|hello|hey|yo|namaste|salam)\b/i,
      'Hey. Ask me anything, I am right here.'],
     [/\b(thank|thanks|nice|cool|love it)\b/i,
@@ -115,7 +116,7 @@
   function state(s){
     if(!liveEl) return;
     liveEl.setAttribute('data-state', s);
-    liveEl.lastChild && (liveEl.lastChild.nodeValue = s === 'thinking' ? 'thinking' : s === 'wait' ? 'wait' : s === 'off' ? 'offline' : 'online');
+    liveEl.lastChild && (liveEl.lastChild.nodeValue = s === 'thinking' ? 'thinking' : s === 'basic' ? 'quick answers' : 'online');
   }
   function paintStarters(){
     if(!chipBox) return;
@@ -176,6 +177,17 @@
     }
   }
 
+  function textReply(value){
+    if(typeof value !== 'string') return '';
+    var text = clean(value);
+    return /^(?:the\s+free\s+model\b.*\bquota\b|(?:error:\s*)?(?:too many requests|rate limit (?:exceeded|reached)))/i.test(text) ? '' : text;
+  }
+  function basicReply(){
+    state('basic');
+    add('bot', BASIC_REPLY);
+    paintStarters();
+  }
+
   async function send(raw){
     var text = (raw || '').trim();
     if(!text || busy) return;
@@ -185,7 +197,7 @@
     input.value = '';
     turns += 2;
     if(hit.hit){ add('bot', hit.reply); return; }
-    if(Date.now() < waitUntil){ add('bot', 'This chat has reached its daily limit. Try again tomorrow.'); return; }
+    if(navigator.onLine === false){ basicReply(); return; }
 
     busy = true;
     if(sendBt) sendBt.disabled = true;
@@ -196,27 +208,19 @@
     try{
       var out = await ask(text, function(part){
         full += part;
-        var chunk = clean(full);
+        var chunk = textReply(full);
         if(!chunk) return;
         preview.classList.add('chat__pending--stream');
         preview.textContent = chunk;
         logEl.scrollTop = logEl.scrollHeight;
       }, ctl.signal);
-      if(out.limited){
-        waitUntil = Date.now() + 30000;
-        state('wait');
-        reply = 'This chat has reached its daily limit. Try again tomorrow.';
-      }else{
-        if(typeof out.reply !== 'string' || !(reply = clean(out.reply))) throw new Error('empty reply');
-        state('online');
-      }
-    }catch(e){
-      state('off');
-      reply = ctl.signal.aborted ? 'That reply took too long. Try again.' : 'I couldn’t get a reply right now. Try again in a moment.';
-    }finally{
+      if(out && out.model !== 'local') reply = textReply(out.reply);
+    }catch(e){ /* A connection error or timeout should never prevent a local answer. */ }
+    finally{
       clearTimeout(timeout);
       preview.remove();
-      add('bot', reply);
+      if(reply){ state('online'); add('bot', reply); }
+      else basicReply();
       busy = false;
       if(sendBt) sendBt.disabled = false;
       if(!layer.hidden && !mobile.matches && document.activeElement === document.body) input.focus({ preventScroll: true });
@@ -267,12 +271,11 @@
   });
   form.addEventListener('submit', function(e){ e.preventDefault(); send(input.value); });
 
-  state('online');
+  state(navigator.onLine === false ? 'basic' : 'online');
 
   window.__chat = {
     open: openChat, close: closeChat, ask: send,
-    state: function(){ return { open: !layer.hidden, messages: turns, busy: busy,
-      waitLeft: Math.max(0, Math.round((waitUntil - Date.now()) / 1000)) }; },
+    state: function(){ return { open: !layer.hidden, messages: turns, busy: busy }; },
     config: BOT
   };
 })();</script>

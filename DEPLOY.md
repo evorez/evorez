@@ -143,7 +143,7 @@ The single-page chat talks to an Edge Function; the Gemini key stays server-side
 
 - Project: `evorez` · ref `khkkqkpzutqltbzfhfuf` · region `ap-south-1` (org `Evorez`)
 - Function: [`supabase/functions/chat/index.ts`](supabase/functions/chat/index.ts) → `https://khkkqkpzutqltbzfhfuf.supabase.co/functions/v1/chat`
-- Gemini 3.5 Flash-Lite is preferred; the free provider remains the server-side fallback.
+- Gemini 3.5 Flash-Lite serves live replies. If providers are unavailable or the daily allowance is exhausted, the backend returns a basic reply instead of a provider error. The page also offers offline quick answers when the backend cannot be reached.
 - Secrets: `GEMINI_API_KEY` preferred; the existing Google credential under `API` also works. Never put the value in the HTML or repo.
 - Tables: `public.chat_messages` and `public.chat_usage` both use RLS. `claim_chat_turn` checks the 40-message daily session allowance and loads history in one privileged call. Its SQL is in `supabase/migrations/` (already applied to production).
 - Request: `POST {"session_id":"…","message":"…"}`. `Accept: text/event-stream` streams `delta` and `done` events; other clients receive `{"reply":"…","model":"…"}`.

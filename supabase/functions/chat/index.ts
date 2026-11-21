@@ -8,12 +8,14 @@ const CORS = {
 const SB_URL = Deno.env.get('SUPABASE_URL')!;
 const SB_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+const BASIC = { reply: 'I can still help with Evorez, this site, EZseed, the music, or getting in touch. Ask me about any of those.', model: 'local' };
 const PERSONA = [
   'You are the assistant living on Evorez\' personal site (evorez.in).',
   'Evorez is a self-taught web builder. The site is a single HTML file with music, a binary backdrop, and this chat.',
   'Voice: calm, dry, a little playful. Answer in plain English, in 1 or 2 short sentences by default.',
   'No markdown or HTML. Never claim to be a person or invent facts about Evorez.',
   'Never output phone numbers, addresses or private emails. Public contact is evorez.alive@gmail.com.',
+  'EZseed is the Java and Bedrock Minecraft seed map at https://evorez.in/ezseed/.',
 ].join(' ');
 
 type Line = { role: string; content: string };
@@ -139,27 +141,6 @@ async function askGemini(message: string, hist: Line[], signal: AbortSignal, del
   return null;
 }
 
-async function askFree(message: string, hist: Line[], signal: AbortSignal): Promise<Reply | null> {
-  try {
-    const res = await fetch('https://text.pollinations.ai/openai', {
-      method: 'POST', signal: AbortSignal.any([signal, AbortSignal.timeout(2500)]),
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'openai', private: true, messages: [
-        { role: 'system', content: PERSONA }, ...hist.slice(-8), { role: 'user', content: message },
-      ] }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const text = data?.choices?.[0]?.message?.content?.trim();
-    return text ? { text, model: 'free' } : null;
-  } catch { return null; }
-}
-
-async function answer(message: string, hist: Line[], signal: AbortSignal, delta?: Delta) {
-  const result = await askGemini(message, hist, signal, delta);
-  return result || (signal.aborted ? null : await askFree(message, hist, signal));
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
@@ -171,13 +152,14 @@ Deno.serve(async (req) => {
   if (!message) return json({ error: 'empty message' }, 400);
   let turn;
   try { turn = await claim(session, req.signal); }
-  catch { return json({ error: 'chat temporarily unavailable' }, 503); }
-  if (!turn.allowed) return json({ error: 'daily limit reached' }, 429);
+  catch { return json(BASIC); }
+  // Even at the daily cap, quick answers don't call a model or add to the chat log.
+  if (!turn.allowed) return json(BASIC);
   const hist = Array.isArray(turn.history) ? turn.history : [];
 
   if (!req.headers.get('accept')?.includes('text/event-stream')) {
-    const result = await answer(message, hist, req.signal);
-    if (!result) return json({ error: 'chat temporarily unavailable' }, 503);
+    const result = await askGemini(message, hist, req.signal);
+    if (!result) return json(BASIC);
     await save(session, message, result.text);
     return json({ reply: result.text, model: result.model });
   }
@@ -192,13 +174,13 @@ Deno.serve(async (req) => {
       };
       try {
         emit({ type: 'ready' });
-        const result = await answer(message, hist, signal, (text) => emit({ type: 'delta', text }));
+        const result = await askGemini(message, hist, signal, (text) => emit({ type: 'delta', text }));
         if (result) {
           // Keep sending disabled until the thread is available for the next turn.
           await save(session, message, result.text);
           emit({ type: 'done', reply: result.text, model: result.model });
-        } else emit({ type: 'error' });
-      } catch { if (!signal.aborted) emit({ type: 'error' }); }
+        } else emit({ type: 'done', ...BASIC });
+      } catch { if (!signal.aborted) emit({ type: 'done', ...BASIC }); }
       finally { if (!cancel.signal.aborted) controller.close(); }
     },
     cancel() { cancel.abort(); },

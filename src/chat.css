@@ -35,8 +35,7 @@
   font-size:9.5px;letter-spacing:.14em;color:rgba(var(--gb-rgb),.85)}
 .chat__live i{width:5px;height:5px;border-radius:50%;background:var(--green-bright);
   box-shadow:0 0 8px rgba(var(--green-rgb),.9)}
-.chat__live[data-state="wait"] i{background:#f0c14b;box-shadow:0 0 8px rgba(240,193,75,.9)}
-.chat__live[data-state="off"] i{background:#e5455a;box-shadow:0 0 8px rgba(229,69,90,.9)}
+.chat__live[data-state="basic"] i{background:#f0c14b;box-shadow:0 0 8px rgba(240,193,75,.9)}
 html[data-theme="light"] .msg--bot{background:rgba(10,21,16,.055);border-color:rgba(10,21,16,.1);color:#10261a}
 html[data-theme="light"] .msg--me{background:rgba(10,120,70,.13);border-color:rgba(10,120,70,.3);color:#08281a}
 html[data-theme="light"] .msg--note{color:rgba(16,38,26,.5)}
