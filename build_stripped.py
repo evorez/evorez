@@ -1017,27 +1017,39 @@ html[data-theme="light"][data-blur="deep"] .card{background:linear-gradient(180d
     log.append('%-28s -%d bytes' % ('removed: terminal + py-lite', cut_len))
 
     ts, te = div_span(s, 'termLayer')
+    # Shared inline robot mark keeps the dock and chat header in sync.
+    BOT_ICON = ('<svg class="chat__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true" '
+                'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'
+                '<path d="M12 7V4m-1-1h2M4 12H2m20 0h-2"/>'
+                '<rect x="4" y="7" width="16" height="14" rx="4"/>'
+                '<path d="M10 17h4"/>'
+                '<circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/>'
+                '<circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/>'
+                '</svg>')
     CHAT_MARKUP = """<div class="term" id="termLayer" hidden>
   <div class="term__box" role="dialog" aria-modal="true" aria-labelledby="chatName">
     <div class="term__bar">
-      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      __BOT_ICON__
       <span id="chatName"><b>Evorez</b> &middot; ask me anything</span>
-      <span class="chat__live" id="chatLive" data-state="online"><i></i>online</span>
+      <span class="chat__live" id="chatLive" role="status" data-state="online"><i></i>online</span>
       <button class="term__x" id="chatClose" type="button" aria-label="Close chat">&times;</button>
     </div>
     <div class="term__body chat__log" id="chatLog" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation"></div>
     <div class="chat__starters" id="chatStarters"></div>
     <form class="term__prompt" id="chatForm" autocomplete="off">
-      <span class="term__ps" aria-hidden="true">&gt;</span>
       <input class="term__in" id="chatIn" name="msg" type="text" autocomplete="off" autocapitalize="sentences"
              enterkeyhint="send" maxlength="400" aria-label="Message Evorez"
              placeholder="ask me anything — who I am, what I am building, hiring?" />
       <button class="chat__send" id="chatSend" type="submit" aria-label="Send message">&uarr;</button>
     </form>
-    <p class="term__hint"><span>free model</span><span>instant answers</span><span>can be wrong</span><span>esc close</span></p>
+    <p class="term__hint"><span>AI replies</span><span>can be wrong</span><span>esc close</span></p>
   </div>
 </div>"""
-    s = s[:ts] + CHAT_MARKUP + s[te:]
+    s = s[:ts] + CHAT_MARKUP.replace('__BOT_ICON__', BOT_ICON) + s[te:]
+    s, n = re.subn(r'(<button[^>]*\bid="termBtn"[^>]*>\s*)<svg\b[^>]*>.*?</svg>',
+                   lambda m: m.group(1) + BOT_ICON, s, count=1, flags=re.S)
+    if n != 1:
+        raise SystemExit('chat button icon anchor missing')
     s = s.replace('aria-label="Open the terminal"', 'aria-label="Chat with Evorez"', 1)
     s = s.replace('<span>TERMINAL</span>', '<span>CHAT</span>', 1)
     j = s.find('</style>')

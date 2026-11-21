@@ -139,11 +139,11 @@ har push par preview + production deploy apne aap ho jayega (Project → Setting
 
 ## Chat backend (Supabase)
 
-The chat panel calls an Edge Function instead of talking to a model directly, so the
-model key never ships to the browser even though the repo is public.
+The single-page chat talks to an Edge Function; the Gemini key stays server-side.
 
 - Project: `evorez` · ref `khkkqkpzutqltbzfhfuf` · region `ap-south-1` (org `Evorez`)
-- Function: `chat` → `https://khkkqkpzutqltbzfhfuf.supabase.co/functions/v1/chat`
-- Tables: `public.chat_messages` (session thread) and `public.chat_usage` (40 msgs/day/session), both RLS-on with no policies — only the service role inside the function touches them.
-- Secrets: `GEMINI_API_KEY` (optional). Set it once and the function uses Gemini; without it the function falls back to the free endpoint, so the bot never goes dark.
-- Request: `POST {"session_id":"…","message":"…"}` → `{"reply":"…","model":"…"}`
+- Function: [`supabase/functions/chat/index.ts`](supabase/functions/chat/index.ts) → `https://khkkqkpzutqltbzfhfuf.supabase.co/functions/v1/chat`
+- Gemini 3.5 Flash-Lite is preferred; the free provider remains the server-side fallback.
+- Secrets: `GEMINI_API_KEY` preferred; the existing Google credential under `API` also works. Never put the value in the HTML or repo.
+- Tables: `public.chat_messages` and `public.chat_usage` both use RLS. `claim_chat_turn` checks the 40-message daily session allowance and loads history in one privileged call. Its SQL is in `supabase/migrations/` (already applied to production).
+- Request: `POST {"session_id":"…","message":"…"}`. `Accept: text/event-stream` streams `delta` and `done` events; other clients receive `{"reply":"…","model":"…"}`.
