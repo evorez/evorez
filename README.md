@@ -66,7 +66,7 @@ If someone lifts it anyway:
    copyright comment and fingerprint
 2. file a DMCA / copyright report with their host (Vercel, Netlify, GitHub
    Pages, Cloudflare) and with GitHub if the source is public
-3. email `evorez.alive@gmail.com` a copy of the notice so the record exists
+3. email `coolex.in@gmail.com` a copy of the notice so the record exists
 
 Nothing client-side can stop a determined rebuild - but a rebuild is a *new*
 site, not a copy, and that is not something a licence or a script can prevent.

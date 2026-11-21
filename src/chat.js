@@ -18,6 +18,7 @@
     greeting: 'Hey. I am Evorez, and this page is the status update. Ask me anything.'
   };
   var busy = false, greeted = false, turns = 0;
+  var PUBLIC_EMAIL = 'coolex.in@gmail.com';
   var BASIC_REPLY = 'I can still help with Evorez, this site, EZseed, the music, or getting in touch. Pick a topic below.';
   var mobile = window.matchMedia('(pointer: coarse)');
   var viewport = window.visualViewport, preconnect = null;
@@ -33,7 +34,7 @@
     [/\b(music|song|track|legacy|nostalgia|og|audio|sound|gaana)\b/i,
      'Music starts off. Tap the music button for Nostalgia, or long-press it to choose OG or Legacy.'],
     [/\b(hire|job|collab|contact|reach|get in touch|telegram|mail|email|talk)\b/i,
-     'For work or collabs: evorez.alive@gmail.com, or Telegram t.me/Evorez. Code lives at github.com/Evorez.'],
+     'For work or collabs: ' + PUBLIC_EMAIL + ', or Telegram t.me/Evorez. Code lives at github.com/Evorez.'],
     [/\b(theme|dark|light|accent|glass|colour|color)\b/i,
      'The first button in the pill switches theme, accent colour and glass. Going light plays a circle reveal.'],
     [/\b(stack|tech|code|html|css|framework|how did you build)\b/i,
@@ -64,12 +65,13 @@
       .replace(/[*_`#>]+/g, '')
       .replace(/^[ \t]*[-•·][ \t]+/gm, '')
       .replace(/[\u{1F000}-\u{1FAFF}\u{1F1E6}-\u{1F1FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '')
+      .replace(/\bevorez\.alive@gmail\.com\b/gi, PUBLIC_EMAIL)
       .replace(/\s*\n\s*/g, ' ')
       .replace(/[ \t]{2,}/g, ' ')
       .trim();
   }
 
-  var LINK = /(https?:\/\/[^\s<>"')]+|t\.me\/[\w.\/-]+|github\.com\/[\w.\/-]+|evorez\.vercel\.app[\w.\/-]*)/g;
+  var LINK = /(https?:\/\/[^\s<>"')]+|coolex\.in@gmail\.com|t\.me\/[\w.\/-]+|github\.com\/[\w.\/-]+|evorez\.vercel\.app[\w.\/-]*)/gi;
   function paintText(node, text){
     var last = 0, m;
     LINK.lastIndex = 0;
@@ -77,10 +79,10 @@
       if(m.index > last) node.appendChild(document.createTextNode(text.slice(last, m.index)));
       var url = m[0].replace(/[.,;:!?)]+$/, '');
       var a = document.createElement('a');
-      a.href = url.indexOf('http') === 0 ? url : 'https://' + url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = url;
+      var mail = url.toLowerCase() === PUBLIC_EMAIL;
+      a.href = mail ? 'mailto:' + PUBLIC_EMAIL : /^https?:/i.test(url) ? url : 'https://' + url;
+      if(!mail){ a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+      a.textContent = mail ? PUBLIC_EMAIL : url;
       node.appendChild(a);
       var tail = m[0].slice(url.length);
       if(tail) node.appendChild(document.createTextNode(tail));

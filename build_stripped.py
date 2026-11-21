@@ -751,7 +751,7 @@ html[data-theme="light"] .avatar--lg{box-shadow:0 0 0 1px rgba(var(--green-rgb),
     pj = s.find('</style>')
     s = s[:pj] + PROFILE_CSS + s[pj:]
 
-    # 5e6. mail button in the pill (gmail icon, evorez.alive@gmail.com)
+    # 5e6. mail button in the pill (gmail icon, coolex.in@gmail.com)
     mail_anchor = re.search(r'<a class="lnk" href="https://github\.com/Evorez".*?</a>', s, re.S)
     if not mail_anchor:
         raise SystemExit('github pill link not found')
@@ -759,7 +759,7 @@ html[data-theme="light"] .avatar--lg{box-shadow:0 0 0 1px rgba(var(--green-rgb),
                  'height="14.8" rx="3.2" stroke="currentColor" stroke-width="1.7"/>'
                  '<path d="m4 7 7.1 5.2a1.6 1.6 0 0 0 1.9 0L20 7" stroke="currentColor" stroke-width="1.7" '
                  'stroke-linecap="round" stroke-linejoin="round"/></svg>')
-    MAIL_LINK = ('\n      <a class="lnk" href="mailto:evorez.alive@gmail.com" aria-label="Email evorez.alive@gmail.com">'
+    MAIL_LINK = ('\n      <a class="lnk" href="mailto:coolex.in@gmail.com" aria-label="Email coolex.in@gmail.com">'
                  + MAIL_ICON + '<span>Gmail</span></a>')
     s = s[:mail_anchor.end()] + MAIL_LINK + s[mail_anchor.end():]
 

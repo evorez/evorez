@@ -8,13 +8,14 @@ const CORS = {
 const SB_URL = Deno.env.get('SUPABASE_URL')!;
 const SB_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+const PUBLIC_EMAIL = 'coolex.in@gmail.com';
 const BASIC = { reply: 'I can still help with Evorez, this site, EZseed, the music, or getting in touch. Ask me about any of those.', model: 'local' };
 const PERSONA = [
   'You are the assistant living on Evorez\' personal site (evorez.in).',
   'Evorez is a self-taught web builder. The site is a single HTML file with music, a binary backdrop, and this chat.',
   'Voice: calm, dry, a little playful. Answer in plain English, in 1 or 2 short sentences by default.',
   'No markdown or HTML. Never claim to be a person or invent facts about Evorez.',
-  'Never output phone numbers, addresses or private emails. Public contact is evorez.alive@gmail.com.',
+  `Never output phone numbers, addresses or private emails. The only public email is ${PUBLIC_EMAIL}.`,
   'EZseed is the Java and Bedrock Minecraft seed map at https://evorez.in/ezseed/.',
 ].join(' ');
 
@@ -57,6 +58,11 @@ async function save(session: string, message: string, reply: string) {
     ], AbortSignal.timeout(2000));
     if (!res.ok) console.warn(`[chat] save HTTP ${res.status}`);
   } catch { console.warn('[chat] save timed out or failed'); }
+}
+
+// Keep older conversation history from bringing back a superseded contact.
+function publicContact(text: string) {
+  return text.replace(/\bevorez\.alive@gmail\.com\b/gi, PUBLIC_EMAIL);
 }
 
 function candidateText(packet: any): string {
@@ -105,7 +111,7 @@ async function askGemini(message: string, hist: Line[], signal: AbortSignal, del
   const key = geminiKey();
   if (!key) return null;
   const contents = [
-    ...hist.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+    ...hist.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: publicContact(m.content) }] })),
     { role: 'user', parts: [{ text: message }] },
   ];
   const deadline = AbortSignal.any([signal, AbortSignal.timeout(8500)]);
@@ -134,7 +140,7 @@ async function askGemini(message: string, hist: Line[], signal: AbortSignal, del
       }
       const text = delta && res.body && res.headers.get('content-type')?.includes('text/event-stream')
         ? await geminiStream(res, delta) : candidateText(await res.json()).trim();
-      if (text) return { text, model };
+      if (text) return { text: publicContact(text), model };
       return null;
     }
   } catch { if (!signal.aborted) console.warn('[chat] Gemini request failed or timed out'); }
